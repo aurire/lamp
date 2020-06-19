@@ -24,8 +24,14 @@ use Symfony\Component\Validator\Constraints as Assert;
  *         }
  *     },
  *     itemOperations={
- *         "get",
- *         "put"
+ *         "get"={
+ *             "normalization_context"={"groups"={"notes:read", "notes:item:get"}}
+ *         },
+ *         "put" = {
+ *             "security" = "is_granted('EDIT', object)",
+ *             "security_message" = "only creator can edit note"
+ *         },
+ *         "delete" = { "access_control" = "is_granted('ROLE_ADMIN')" }
  *     },
  *     normalizationContext={"groups"={"notes:read"}},
  *     denormalizationContext={"groups"={"notes:write"}},
@@ -56,7 +62,7 @@ class Note
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"notes:read", "notes:write"})
+     * @Groups({"notes:read", "notes:write", "user:read", "user:write"})
      * @Assert\NotBlank()
      * @Assert\Length(
      *     min=2,
@@ -68,7 +74,7 @@ class Note
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"notes:read"})
+     * @Groups({"notes:read", "user:read"})
      * @Assert\NotBlank()
      * @Assert\Length(
      *     min=2,
@@ -86,9 +92,17 @@ class Note
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"notes:read", "notes:write"})
+     * @Groups({"notes:read", "notes:write", "user:write"})
      */
     private $isPublic;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="notes")
+     * @ORM\JoinColumn(nullable=false)
+     * @Groups({"notes:read", "notes:write"})
+     * @Assert\Valid()
+     */
+    private $owner;
 
     public function getId(): ?int
     {
@@ -123,7 +137,7 @@ class Note
     /**
      * Raw text for the message
      *
-     * @Groups("notes:write")
+     * @Groups({"notes:write", "user:write"})
      * @SerializedName("message")
      */
     public function setTextMessage(?string $message): self
@@ -151,6 +165,18 @@ class Note
     public function setIsPublic(bool $isPublic = false): self
     {
         $this->isPublic = $isPublic;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): self
+    {
+        $this->owner = $owner;
 
         return $this;
     }

@@ -11,12 +11,15 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class CustomApiTestCase extends ApiTestCase
 {
-    protected function createUser(string $email, string $password): User
+    protected function createUser(string $email, string $password, string $role = null): User
     {
         $user = new User();
         $user->setEmail($email);
         $encoded = self::$container->get('security.password_encoder')->encodePassword($user, $password);
         $user->setPassword($encoded);
+        if (null !== $role) {
+            $user->setRoles(array_merge($user->getRoles(), [$role]));
+        }
 
         $em = self::$container->get(EntityManagerInterface::class);
         $em->persist($user);
@@ -38,11 +41,16 @@ class CustomApiTestCase extends ApiTestCase
         $this->assertResponseStatusCodeSame(204);
     }
 
-    public function createUserAndLogin(Client $client, string $email, string $password): User
+    protected function createUserAndLogin(Client $client, string $email, string $password): User
     {
         $user = $this->createUser($email, $password);
         $this->login($client, $email, $password);
 
         return $user;
+    }
+
+    protected function getEntityManager(): EntityManagerInterface
+    {
+        return self::$container->get(EntityManagerInterface::class);
     }
 }
