@@ -1,4 +1,5 @@
 /.idea
 /symfony/vendor
 vendor
+/front/node_modules
 
