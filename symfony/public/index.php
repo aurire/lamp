@@ -1,6 +1,7 @@
 <?php
 //header("Access-Control-Allow-Credentials: true");
-
+//header("Access-Control-Allow-Origin: *");
+//die();
 use App\Kernel;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\ErrorHandler\Debug;

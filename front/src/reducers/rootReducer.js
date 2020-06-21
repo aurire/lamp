@@ -5,7 +5,11 @@ import {
     FETCH_POSTS_SUCCESS,
     FETCH_USERS_STARTED,
     FETCH_USERS_FAILURE,
-    FETCH_USERS_SUCCESS
+    FETCH_USERS_SUCCESS,
+    INITIATE_LOGIN_STARTED,
+    INITIATE_LOGIN_FAILURE,
+    INITIATE_LOGIN_SUCCESS,
+    GET_USER_DATA_SUCCESS
 } from "../constants/actionTypes";
 
 const initialState = {
@@ -63,6 +67,33 @@ const rootReducer = (state = initialState, action) => {
             ...state,
             loading: false,
             error: action.payload.error
+        };
+    } else if (INITIATE_LOGIN_STARTED === action.type) {
+        console.log('INITIATE_LOGIN_STARTED');
+        return {
+            ...state,
+            loading: true
+        };
+    } else if (INITIATE_LOGIN_SUCCESS === action.type) {
+        return {
+            ...state,
+            loading: false,
+            error: null,
+            user: action.payload
+        };
+    } else if (INITIATE_LOGIN_FAILURE === action.type) {
+        console.log('INITIATE_LOGIN_FAILURE');
+        return {
+            ...state,
+            loading: false,
+            error: action.payload.error
+        };
+    } else if (GET_USER_DATA_SUCCESS === action.type) {
+        console.log('GET_USER_DATA_SUCCESS');
+        return {
+            ...state,
+            loading: false,
+            userData: action.payload.payload.data
         };
     }
 

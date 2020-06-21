@@ -1,6 +1,15 @@
 import React from "react";
 import {connect} from 'react-redux';
 import {fetchPosts, fetchUsers} from "./actions";
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link,
+    withRouter
+} from "react-router-dom";
+import Logged from "./pages/Logged";
+import Unlogged from "./pages/Unlogged";
 
 const mapStateToProps = (state) => {
     return state;
@@ -22,6 +31,8 @@ class App extends React.Component {
         };
         this.handleClick = this.handleClick.bind(this);
         this.handleClick2 = this.handleClick2.bind(this);
+        let user = localStorage.getItem('user');
+        console.log(user);
     }
     handleClick(event) {
         console.log('button clicked');
@@ -32,16 +43,18 @@ class App extends React.Component {
         this.props.fetchUsers();
     }
     render() {
-        const textState = JSON.stringify(this.state);
-        const textStorage = window.store ? JSON.stringify(window.store.getState()) : '';
-
         return (
             <div>
-                <h1>State</h1>
-                <textarea readOnly value={textState} />
-                <h1>Storage</h1>
-                <textarea readOnly value={textStorage} />
-
+                <Router>
+                    <Switch>
+                        <Route exact path="/">
+                            <Unlogged />
+                        </Route>
+                        <Route path="/home">
+                            <Logged />
+                        </Route>
+                    </Switch>
+                </Router>
                 <h1>Test</h1>
                 <button onClick={this.handleClick}>Test1</button>
                 <h1>Test2</h1>
