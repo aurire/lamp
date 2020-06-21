@@ -1,21 +1,13 @@
 import {
-    ADD_ARTICLE,
-    FETCH_POSTS_STARTED,
-    FETCH_POSTS_FAILURE,
-    FETCH_POSTS_SUCCESS,
-    FETCH_USERS_STARTED,
-    FETCH_USERS_FAILURE,
-    FETCH_USERS_SUCCESS,
     INITIATE_LOGIN_STARTED,
     INITIATE_LOGIN_SUCCESS,
     INITIATE_LOGIN_FAILURE,
+    INITIATE_LOGOUT_STARTED,
+    INITIATE_LOGOUT_FAILURE,
+    INITIATE_LOGOUT_SUCCESS,
     GET_USER_DATA_SUCCESS
 } from "../constants/actionTypes";
 import axios from "axios";
-
-export function addArticle(payload) {
-    return { type: ADD_ARTICLE, payload }
-};
 
 //getUserData
 export const getUserData = (id) => {
@@ -42,7 +34,6 @@ export const getUserDataSuccess = payload => {
     };
 };
 
-
 //initiateLogin
 export const initiateLogin = (email, password) => {
     return dispatch => {
@@ -63,12 +54,10 @@ export const initiateLogin = (email, password) => {
                 dispatch(initiateLoginSuccess(res));
             })
             .catch(err => {
-                console.log(err);
-                dispatch(initiateLoginFailed(err.message));
+                dispatch(initiateLoginFailed(err));
             });
     };
 };
-
 const initiateLoginStarted = () => {
     return {
         type: INITIATE_LOGIN_STARTED,
@@ -94,86 +83,41 @@ const initiateLoginFailed = error => {
     };
 };
 
-export const fetchPosts = () => {
+//initiateLogout
+export const initiateLogout = () => {
     return dispatch => {
-        dispatch(fetchPostsStarted());
-
+        dispatch(initiateLogoutStarted());
         axios
-            .post("http://localhost/login", {
-                "email": "frenkas@gmail.com",
-                "password": "asd"
-            })
+            .post("http://localhost/logout")
             .then(res => {
-                dispatch(fetchPostsSuccess(res));
+                localStorage.removeItem('user');
+                dispatch(initiateLogoutSuccess(res));
             })
             .catch(err => {
-                dispatch(fetchPostsFailed(err.message));
+                console.log(err);
+                dispatch(initiateLogoutFailed(err.message));
             });
     };
 };
-
-const fetchPostsStarted = () => {
+const initiateLogoutStarted = () => {
     return {
-        type: FETCH_POSTS_STARTED,
+        type: INITIATE_LOGOUT_STARTED,
         payload: {
             isLoading: true
         }
     };
 };
-
-const fetchPostsSuccess = posts => {
+const initiateLogoutSuccess = payload => {
     return {
-        type: FETCH_POSTS_SUCCESS,
+        type: INITIATE_LOGOUT_SUCCESS,
         payload: {
-            posts
+            payload
         }
     };
 };
-
-const fetchPostsFailed = error => {
+const initiateLogoutFailed = error => {
     return {
-        type: FETCH_POSTS_FAILURE,
-        payload: {
-            error
-        }
-    };
-};
-
-export const fetchUsers = () => {
-        return dispatch => {
-            dispatch(fetchUsersStarted());
-
-            axios
-                .get("http://localhost/api/users?page=1", {withCredentials: true})
-                .then(res => {
-                    dispatch(fetchUsersSuccess(res.data));
-                })
-                .catch(err => {
-                    dispatch(fetchUsersFailed(err.message));
-                });
-        };
-};
-const fetchUsersStarted = () => {
-    return {
-        type: FETCH_USERS_STARTED,
-        payload: {
-            isLoading: true
-        }
-    };
-};
-
-const fetchUsersSuccess = posts => {
-    return {
-        type: FETCH_USERS_SUCCESS,
-        payload: {
-            posts
-        }
-    };
-};
-
-const fetchUsersFailed = error => {
-    return {
-        type: FETCH_USERS_FAILURE,
+        type: INITIATE_LOGOUT_FAILURE,
         payload: {
             error
         }
