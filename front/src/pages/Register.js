@@ -2,12 +2,12 @@ import React from "react";
 import {withRouter} from "react-router";
 import {Link} from "react-router-dom";
 import {connect} from "react-redux";
-import {initiateLogin, getUserData} from "../actions";
+import {initiateRegister, setAlert} from "../actions";
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        initiateLogin: (email, password) => dispatch(initiateLogin(email, password)),
-        getUserData: (id) => dispatch(getUserData(id))
+        initiateRegister: (email, password) => dispatch(initiateRegister(email, password)),
+        setAlert: (msg) => dispatch(setAlert(msg))
     };
 };
 
@@ -15,14 +15,12 @@ const mapStateToProps = (state) => {
     return {...state};
 };
 
-class Unlogged extends React.Component {
+class Register extends React.Component {
     constructor(props) {
         super(props);
-        let user = localStorage.getItem('user');
         this.state = {
             email: '',
             password: '',
-            user: user,
             error: null
         };
         this.handleChange = this.handleChange.bind(this);
@@ -36,20 +34,20 @@ class Unlogged extends React.Component {
     }
     handleSubmit(event) {
         event.preventDefault();
-        this.props.initiateLogin(this.state.email, this.state.password);
-    }
-    componentDidMount() {
-        if (this.state.user !== null) {
-            this.props.getUserData(this.state.user);
-        }
+        this.props.initiateRegister(this.state.email, this.state.password);
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.userData !== null) {
+        if (null !== this.props.userData) {
             this.props.history.push('/home');
+        }
+        if (true === this.props.loaded) {
+            this.props.setAlert('Succesfuly registered');
+            this.props.history.push('/');
         }
     }
 
     render() {
+        console.log('render');
         let error = '';
         if (this.props.error !== null) {
             if (
@@ -62,12 +60,10 @@ class Unlogged extends React.Component {
                 error = <p>{this.props.error.message}</p>
             }
         }
-        const alert = this.props.alert;
 
         return (
             <div>
-                <p>{alert}</p>
-                <h1>Login</h1>
+                <h1>Register</h1>
                 <form>
                     <div>
                         <label htmlFor="email">Email</label>
@@ -77,14 +73,14 @@ class Unlogged extends React.Component {
                         <label htmlFor="password">Password</label>
                         <input onChange={this.handleChange} type="password" name="password" id="password" />
                     </div>
-                    <input onClick={this.handleSubmit} type="submit" value="Login" />
+                    <input onClick={this.handleSubmit} type="submit" value="Register" />
                     {error}
                 </form>
-                <Link to="/register">Register</Link>
+                <Link to="/">Login</Link>
             </div>
         );
     }
 }
 
-const connectedUnlogged = connect(mapStateToProps, mapDispatchToProps)(Unlogged);
-export default withRouter(connectedUnlogged);
+const connectedRegister = connect(mapStateToProps, mapDispatchToProps)(Register);
+export default withRouter(connectedRegister);

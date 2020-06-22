@@ -5,13 +5,21 @@ import {
     INITIATE_LOGOUT_STARTED,
     INITIATE_LOGOUT_FAILURE,
     INITIATE_LOGOUT_SUCCESS,
-    GET_USER_DATA_SUCCESS
+    GET_USER_DATA_SUCCESS,
+    INITIATE_REGISTER_STARTED,
+    INITIATE_REGISTER_SUCCESS,
+    INITIATE_REGISTER_FAILURE,
+    LOCATION_CHANGED, SET_ALERT
 } from "../constants/actionTypes";
 
 const initialState = {
     loading: false,
     error: null,
-    userData: null
+    userData: null,
+    user: null,
+    loaded: false,
+    alert: null,
+    alertShown: true
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -19,12 +27,14 @@ const rootReducer = (state = initialState, action) => {
         console.log('INITIATE_LOGIN_STARTED');
         return {
             ...state,
-            loading: true
+            loading: true,
+            loaded: false,
         };
     } else if (INITIATE_LOGIN_SUCCESS === action.type) {
         return {
             ...state,
             loading: false,
+            loaded: true,
             error: null,
             user: action.payload.payload.headers.location
         };
@@ -32,6 +42,7 @@ const rootReducer = (state = initialState, action) => {
         return {
             ...state,
             loading: false,
+            loaded: false,
             error: action.payload.error
         };
     } else if (GET_USER_DATA_SUCCESS === action.type) {
@@ -39,19 +50,22 @@ const rootReducer = (state = initialState, action) => {
         return {
             ...state,
             loading: false,
+            loaded: true,
             userData: action.payload.payload.data
         };
     } else if (INITIATE_LOGOUT_STARTED === action.type) {
         console.log('INITIATE_LOGOUT_STARTED');
         return {
             ...state,
-            loading: true
+            loading: true,
+            loaded: false,
         };
     } else if (INITIATE_LOGOUT_SUCCESS === action.type) {
         console.log('INITIATE_LOGOUT_SUCCESS');
         return {
             ...state,
             loading: false,
+            loaded: true,
             error: null,
             userData: null,
             user: null
@@ -61,11 +75,48 @@ const rootReducer = (state = initialState, action) => {
         return {
             ...state,
             loading: false,
+            loaded: false,
             error: action.payload.error
+        };
+    } else if (INITIATE_REGISTER_STARTED === action.type) {
+        console.log('INITIATE_REGISTER_STARTED');
+        return {
+            ...state,
+            loading: true,
+            loaded: false
+        };
+    } else if (INITIATE_REGISTER_SUCCESS === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: true,
+            error: null
+        };
+    } else if (INITIATE_REGISTER_FAILURE === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: false,
+            error: action.payload.error
+        };
+    } else if (LOCATION_CHANGED === action.type) {
+        return state.alertShown
+            ? {
+                ...state,
+                alert: null
+            } : {
+                ...state,
+                alertShown: true
+            };
+    } else if (SET_ALERT === action.type) {
+        return {
+            ...state,
+            alert: action.payload.msg,
+            alertShown: false
         };
     }
 
-        return state;
+    return state;
 }
 
 export default rootReducer;

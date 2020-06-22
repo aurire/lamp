@@ -5,7 +5,11 @@ import {
     INITIATE_LOGOUT_STARTED,
     INITIATE_LOGOUT_FAILURE,
     INITIATE_LOGOUT_SUCCESS,
-    GET_USER_DATA_SUCCESS
+    GET_USER_DATA_SUCCESS,
+    INITIATE_REGISTER_STARTED,
+    INITIATE_REGISTER_SUCCESS,
+    INITIATE_REGISTER_FAILURE,
+    LOCATION_CHANGED, SET_ALERT
 } from "../constants/actionTypes";
 import axios from "axios";
 
@@ -13,16 +17,18 @@ import axios from "axios";
 export const getUserData = (id) => {
     return dispatch => {
         //dispatch(getUserDataStarted());
-        var userId = id.split('/').pop();
-        axios
-            .get("http://localhost/api/users/" + userId, {withCredentials: true})
-            .then(res => {
-                dispatch(getUserDataSuccess(res));
-            })
-            .catch(err => {
-                console.log(err);
-                //dispatch(getUserDataFailed(err.message));
-            });
+        if (id !== null) {
+            let userId = id.split('/');
+            axios
+                .get("http://localhost/api/users/" + userId.pop(), {withCredentials: true})
+                .then(res => {
+                    dispatch(getUserDataSuccess(res));
+                })
+                .catch(err => {
+                    console.log(err);
+                    //dispatch(getUserDataFailed(err.message));
+                });
+        }
     };
 };
 export const getUserDataSuccess = payload => {
@@ -121,5 +127,62 @@ const initiateLogoutFailed = error => {
         payload: {
             error
         }
+    };
+};
+
+//initiateRegister
+export const initiateRegister = (email, password) => {
+    return dispatch => {
+        dispatch(initiateRegisterStarted());
+
+        axios
+            .post("http://localhost/api/users", {
+                "email": email,
+                "password": password
+            }, {withCredentials: true})
+            .then(res => {
+                console.log(res.headers.location);
+
+                dispatch(initiateRegisterSuccess(res));
+            })
+            .catch(err => {
+                dispatch(initiateRegisterFailed(err));
+            });
+    };
+};
+const initiateRegisterStarted = () => {
+    return {
+        type: INITIATE_REGISTER_STARTED,
+        payload: {
+            isLoading: true
+        }
+    };
+};
+const initiateRegisterSuccess = payload => {
+    return {
+        type: INITIATE_REGISTER_SUCCESS,
+        payload: {
+            payload
+        }
+    };
+};
+const initiateRegisterFailed = error => {
+    return {
+        type: INITIATE_REGISTER_FAILURE,
+        payload: {
+            error
+        }
+    };
+};
+export const locationChanged = () => {
+    return {
+        type: LOCATION_CHANGED,
+        payload: {}
+    };
+};
+export const setAlert = (msg) => {
+    return {
+        type: SET_ALERT,
+        payload: {msg: msg}
     };
 };
