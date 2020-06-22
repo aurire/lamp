@@ -9,7 +9,13 @@ import {
     INITIATE_REGISTER_STARTED,
     INITIATE_REGISTER_SUCCESS,
     INITIATE_REGISTER_FAILURE,
-    LOCATION_CHANGED, SET_ALERT
+    LOCATION_CHANGED, SET_ALERT,
+    INITIATE_NOTE_CREATE_STARTED,
+    INITIATE_NOTE_CREATE_FAILURE,
+    INITIATE_NOTE_CREATE_SUCCESS,
+    FETCH_NOTE_LIST_STARTED,
+    FETCH_NOTE_LIST_FAILURE,
+    FETCH_NOTE_LIST_SUCCESS
 } from "../constants/actionTypes";
 
 const initialState = {
@@ -19,7 +25,8 @@ const initialState = {
     user: null,
     loaded: false,
     alert: null,
-    alertShown: true
+    alertShown: true,
+    notes: {}
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -51,7 +58,8 @@ const rootReducer = (state = initialState, action) => {
             ...state,
             loading: false,
             loaded: true,
-            userData: action.payload.payload.data
+            userData: action.payload.payload.data,
+            user: action.payload.payload.data['@id']
         };
     } else if (INITIATE_LOGOUT_STARTED === action.type) {
         console.log('INITIATE_LOGOUT_STARTED');
@@ -103,16 +111,67 @@ const rootReducer = (state = initialState, action) => {
         return state.alertShown
             ? {
                 ...state,
-                alert: null
+                alert: null,
+                loaded: false
             } : {
                 ...state,
-                alertShown: true
+                alertShown: true,
+                loaded: false
             };
     } else if (SET_ALERT === action.type) {
         return {
             ...state,
             alert: action.payload.msg,
             alertShown: false
+        };
+    } else if (INITIATE_NOTE_CREATE_STARTED === action.type) {
+        console.log('INITIATE_NOTE_CREATE_STARTED');
+        return {
+            ...state,
+            loading: true,
+            loaded: false
+        };
+    } else if (INITIATE_NOTE_CREATE_SUCCESS === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: true,
+            error: null
+        };
+    } else if (INITIATE_NOTE_CREATE_FAILURE === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: false,
+            error: action.payload.error
+        };
+    } else if (FETCH_NOTE_LIST_STARTED === action.type) {
+        console.log('FETCH_NOTE_LIST_STARTED');
+        return {
+            ...state,
+            loading: true,
+            loaded: false,
+            notes: {
+
+            }
+        };
+    } else if (FETCH_NOTE_LIST_SUCCESS === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: true,
+            error: null,
+            notes: {
+                ...state.notes,
+                [action.payload.page]: action.payload.items.data
+            }
+        };
+    } else if (FETCH_NOTE_LIST_FAILURE === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: false,
+            error: action.payload.error
         };
     }
 

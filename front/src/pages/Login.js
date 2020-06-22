@@ -15,7 +15,7 @@ const mapStateToProps = (state) => {
     return {...state};
 };
 
-class Unlogged extends React.Component {
+class Login extends React.Component {
     constructor(props) {
         super(props);
         let user = localStorage.getItem('user');
@@ -45,7 +45,7 @@ class Unlogged extends React.Component {
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.userData !== null) {
-            this.props.history.push('/home');
+            this.props.history.push('/user/');
         }
     }
 
@@ -86,5 +86,5 @@ class Unlogged extends React.Component {
     }
 }
 
-const connectedUnlogged = connect(mapStateToProps, mapDispatchToProps)(Unlogged);
-export default withRouter(connectedUnlogged);
+const connectedLogin = connect(mapStateToProps, mapDispatchToProps)(Login);
+export default withRouter(connectedLogin);

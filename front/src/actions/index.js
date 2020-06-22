@@ -9,7 +9,14 @@ import {
     INITIATE_REGISTER_STARTED,
     INITIATE_REGISTER_SUCCESS,
     INITIATE_REGISTER_FAILURE,
-    LOCATION_CHANGED, SET_ALERT
+    LOCATION_CHANGED,
+    SET_ALERT,
+    INITIATE_NOTE_CREATE_STARTED,
+    INITIATE_NOTE_CREATE_FAILURE,
+    INITIATE_NOTE_CREATE_SUCCESS,
+    FETCH_NOTE_LIST_STARTED,
+    FETCH_NOTE_LIST_FAILURE,
+    FETCH_NOTE_LIST_SUCCESS
 } from "../constants/actionTypes";
 import axios from "axios";
 
@@ -174,6 +181,7 @@ const initiateRegisterFailed = error => {
         }
     };
 };
+
 export const locationChanged = () => {
     return {
         type: LOCATION_CHANGED,
@@ -184,5 +192,95 @@ export const setAlert = (msg) => {
     return {
         type: SET_ALERT,
         payload: {msg: msg}
+    };
+};
+
+//initiateNoteCreate
+export const initiateNoteCreate = (title, message) => {
+    return dispatch => {
+        dispatch(initiateNoteCreateStarted());
+
+        axios
+            .post("http://localhost/api/notes", {
+                "title": title,
+                "message": message,
+                "isPublic": true,
+                "owner": "/api/users/2" //@TODO
+            }, {withCredentials: true})
+            .then(res => {
+                console.log(res);
+
+                dispatch(initiateNoteCreateSuccess(res));
+            })
+            .catch(err => {
+                dispatch(initiateNoteCreateFailed(err));
+            });
+    };
+};
+const initiateNoteCreateStarted = () => {
+    return {
+        type: INITIATE_NOTE_CREATE_STARTED,
+        payload: {
+            isLoading: true
+        }
+    };
+};
+const initiateNoteCreateSuccess = payload => {
+    return {
+        type: INITIATE_NOTE_CREATE_SUCCESS,
+        payload: {
+            payload
+        }
+    };
+};
+const initiateNoteCreateFailed = error => {
+    return {
+        type: INITIATE_NOTE_CREATE_FAILURE,
+        payload: {
+            error
+        }
+    };
+};
+
+//fetchNotesList
+export const fetchNotesList = (page) => {
+    return dispatch => {
+        dispatch(fetchNoteListStarted());
+
+        axios
+            .get("http://localhost/api/notes?page=" + page, {withCredentials: true})
+            .then(res => {
+                console.log(res);
+
+                dispatch(fetchNoteListSuccess(res, page));
+            })
+            .catch(err => {
+                dispatch(fetchNoteListFailed(err));
+            });
+    };
+};
+const fetchNoteListStarted = () => {
+    return {
+        type: FETCH_NOTE_LIST_STARTED,
+        payload: {
+            isLoading: true
+        }
+    };
+};
+const fetchNoteListSuccess = (payload, page) => {
+    return {
+        type: FETCH_NOTE_LIST_SUCCESS,
+        payload: {
+            items: payload,
+            page: page
+        }
+    };
+};
+const fetchNoteListFailed = error => {
+    return {
+        type: FETCH_NOTE_LIST_FAILURE,
+        payload: {
+            error
+        }
     };
 };

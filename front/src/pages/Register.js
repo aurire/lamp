@@ -1,6 +1,6 @@
 import React from "react";
-import {withRouter} from "react-router";
 import {Link} from "react-router-dom";
+import {withRouter} from "react-router";
 import {connect} from "react-redux";
 import {initiateRegister, setAlert} from "../actions";
 
@@ -38,7 +38,7 @@ class Register extends React.Component {
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (null !== this.props.userData) {
-            this.props.history.push('/home');
+            this.props.history.push('/user/');
         }
         if (true === this.props.loaded) {
             this.props.setAlert('Succesfuly registered');

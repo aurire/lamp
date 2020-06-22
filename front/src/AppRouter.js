@@ -4,8 +4,8 @@ import {
     Route,
     withRouter
 } from "react-router-dom";
-import Logged from "./pages/Logged";
-import Unlogged from "./pages/Unlogged";
+import User from "./pages/Logged/User";
+import Login from "./pages/Login";
 import Register from "./pages/Register";
 import {connect} from "react-redux";
 import {locationChanged} from "./actions";
@@ -31,13 +31,13 @@ class AppRouter extends React.Component {
         return (
             <Switch>
                 <Route exact path="/">
-                    <Unlogged />
+                    <Login />
                 </Route>
                 <Route exact path="/register">
                     <Register />
                 </Route>
-                <Route path="/home">
-                    <Logged />
+                <Route path="/user/">
+                    <User />
                 </Route>
             </Switch>
         );
