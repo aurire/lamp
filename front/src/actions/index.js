@@ -249,12 +249,14 @@ const initiateNoteCreateFailed = error => {
 };
 
 //fetchNotesList
-export const fetchNotesList = (page) => {
+export const fetchNotesList = (owner, page) => {
     return dispatch => {
         dispatch(fetchNoteListStarted());
+        const owner = 2;
 
         axios
-            .get("http://localhost/api/notes?page=" + page, {withCredentials: true})
+            .get("http://localhost/api/notes?owner=%2Fapi%2Fusers%2F" + owner
+                + "&page=" + page, {withCredentials: true})
             .then(res => {
                 console.log(res);
 
