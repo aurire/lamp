@@ -23,7 +23,7 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  *
  *          },
  *         "post" = {
- *             "access_control" = "is_granted('IS_AUTHENTICATED_ANONYMOUSLY')",
+ *             "access_control" = "is_granted('ROLE_USER')",
  *             "validation_groups" = { "Default", "create"}
  *         }
  *
@@ -89,9 +89,15 @@ class User implements UserInterface
      */
     private $phoneNumber;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ShareNoteToUser::class, mappedBy="user", orphanRemoval=true)
+     */
+    private $sharedNotes;
+
     public function __construct()
     {
         $this->notes = new ArrayCollection();
+        $this->sharedNotes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -226,6 +232,37 @@ class User implements UserInterface
     public function setPhoneNumber(?string $phoneNumber): self
     {
         $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ShareNoteToUser[]
+     */
+    public function getSharedNotes(): Collection
+    {
+        return $this->sharedNotes;
+    }
+
+    public function addSharedNote(ShareNoteToUser $sharedNote): self
+    {
+        if (!$this->sharedNotes->contains($sharedNote)) {
+            $this->sharedNotes[] = $sharedNote;
+            $sharedNote->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSharedNote(ShareNoteToUser $sharedNote): self
+    {
+        if ($this->sharedNotes->contains($sharedNote)) {
+            $this->sharedNotes->removeElement($sharedNote);
+            // set the owning side to null (unless already changed)
+            if ($sharedNote->getUser() === $this) {
+                $sharedNote->setUser(null);
+            }
+        }
 
         return $this;
     }

@@ -5,6 +5,8 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\NoteRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
@@ -51,6 +53,7 @@ class Note
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->noteShares = new ArrayCollection();
     }
 
     /**
@@ -103,6 +106,11 @@ class Note
      * @Assert\Valid()
      */
     private $owner;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ShareNoteToUser::class, mappedBy="note", orphanRemoval=true)
+     */
+    private $noteShares;
 
     public function getId(): ?int
     {
@@ -177,6 +185,37 @@ class Note
     public function setOwner(?User $owner): self
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ShareNoteToUser[]
+     */
+    public function getNoteShares(): Collection
+    {
+        return $this->noteShares;
+    }
+
+    public function addNoteShare(ShareNoteToUser $share): self
+    {
+        if (!$this->noteShares->contains($share)) {
+            $this->noteShares[] = $share;
+            $share->setNote($this);
+        }
+
+        return $this;
+    }
+
+    public function removeShare(ShareNoteToUser $share): self
+    {
+        if ($this->noteShares->contains($share)) {
+            $this->noteShares->removeElement($share);
+            // set the owning side to null (unless already changed)
+            if ($share->getNote() === $this) {
+                $share->setNote(null);
+            }
+        }
 
         return $this;
     }
