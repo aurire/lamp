@@ -15,18 +15,27 @@ import {
     INITIATE_NOTE_CREATE_SUCCESS,
     FETCH_NOTE_LIST_STARTED,
     FETCH_NOTE_LIST_FAILURE,
-    FETCH_NOTE_LIST_SUCCESS
+    FETCH_NOTE_LIST_SUCCESS,
+    FETCH_NOTE_SUCCESS,
+    FETCH_NOTE_STARTED,
+    FETCH_NOTE_FAILURE,
+    INITIATE_NOTE_EDIT_SUCCESS,
+    INITIATE_NOTE_EDIT_STARTED,
+    INITIATE_NOTE_EDIT_FAILURE
 } from "../constants/actionTypes";
 
 const initialState = {
     loading: false,
+    loaded: false,
+    dataFetchFinished: false,
+    mainActionFinished: false,
     error: null,
     userData: null,
     user: null,
-    loaded: false,
     alert: null,
     alertShown: true,
-    notes: {}
+    notes: {},
+    note: {}
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -112,7 +121,9 @@ const rootReducer = (state = initialState, action) => {
             ? {
                 ...state,
                 alert: null,
-                loaded: false
+                loaded: false,
+                dataFetchFinished: false,
+                mainActionFinished: false,
             } : {
                 ...state,
                 alertShown: true,
@@ -136,7 +147,9 @@ const rootReducer = (state = initialState, action) => {
             ...state,
             loading: false,
             loaded: true,
-            error: null
+            mainActionFinished: true,
+            error: null,
+            notes: {}
         };
     } else if (INITIATE_NOTE_CREATE_FAILURE === action.type) {
         return {
@@ -150,10 +163,7 @@ const rootReducer = (state = initialState, action) => {
         return {
             ...state,
             loading: true,
-            loaded: false,
-            notes: {
-
-            }
+            loaded: false
         };
     } else if (FETCH_NOTE_LIST_SUCCESS === action.type) {
         return {
@@ -167,6 +177,56 @@ const rootReducer = (state = initialState, action) => {
             }
         };
     } else if (FETCH_NOTE_LIST_FAILURE === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: false,
+            error: action.payload.error
+        };
+    } else if (FETCH_NOTE_STARTED === action.type) {
+        console.log('FETCH_NOTE_STARTED');
+        return {
+            ...state,
+            loading: true,
+            loaded: false,
+        };
+    } else if (FETCH_NOTE_SUCCESS === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: true,
+            dataFetchFinished: true,
+            error: null,
+            note: {
+                ...state.note,
+                [action.payload.id]: action.payload.item.data
+            }
+        };
+    } else if (FETCH_NOTE_FAILURE === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: false,
+            dataFetchFinished: true,
+            error: action.payload.error
+        };
+    } else if (INITIATE_NOTE_EDIT_STARTED === action.type) {
+        console.log('INITIATE_NOTE_EDIT_STARTED');
+        return {
+            ...state,
+            loading: true,
+            loaded: false
+        };
+    } else if (INITIATE_NOTE_EDIT_SUCCESS === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: true,
+            mainActionFinished: true,
+            notes: {},
+            error: null
+        };
+    } else if (INITIATE_NOTE_EDIT_FAILURE === action.type) {
         return {
             ...state,
             loading: false,

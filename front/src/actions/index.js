@@ -16,7 +16,13 @@ import {
     INITIATE_NOTE_CREATE_SUCCESS,
     FETCH_NOTE_LIST_STARTED,
     FETCH_NOTE_LIST_FAILURE,
-    FETCH_NOTE_LIST_SUCCESS
+    FETCH_NOTE_LIST_SUCCESS,
+    FETCH_NOTE_FAILURE,
+    FETCH_NOTE_STARTED,
+    FETCH_NOTE_SUCCESS,
+    INITIATE_NOTE_EDIT_FAILURE,
+    INITIATE_NOTE_EDIT_STARTED,
+    INITIATE_NOTE_EDIT_SUCCESS
 } from "../constants/actionTypes";
 import axios from "axios";
 
@@ -196,7 +202,7 @@ export const setAlert = (msg) => {
 };
 
 //initiateNoteCreate
-export const initiateNoteCreate = (title, message) => {
+export const initiateNoteCreate = (ownerId, title, message) => {
     return dispatch => {
         dispatch(initiateNoteCreateStarted());
 
@@ -205,7 +211,7 @@ export const initiateNoteCreate = (title, message) => {
                 "title": title,
                 "message": message,
                 "isPublic": true,
-                "owner": "/api/users/2" //@TODO
+                "owner": "/api/users/" + ownerId
             }, {withCredentials: true})
             .then(res => {
                 console.log(res);
@@ -279,6 +285,96 @@ const fetchNoteListSuccess = (payload, page) => {
 const fetchNoteListFailed = error => {
     return {
         type: FETCH_NOTE_LIST_FAILURE,
+        payload: {
+            error
+        }
+    };
+};
+
+//fetchNote
+export const fetchNote = (id) => {
+    return dispatch => {
+        dispatch(fetchNoteStarted());
+
+        axios
+            .get("http://localhost/api/notes/" + id, {withCredentials: true})
+            .then(res => {
+                console.log(res);
+
+                dispatch(fetchNoteSuccess(res, id));
+            })
+            .catch(err => {
+                dispatch(fetchNoteFailed(err));
+            });
+    };
+};
+const fetchNoteStarted = () => {
+    return {
+        type: FETCH_NOTE_STARTED,
+        payload: {
+            isLoading: true
+        }
+    };
+};
+const fetchNoteSuccess = (payload, id) => {
+    return {
+        type: FETCH_NOTE_SUCCESS,
+        payload: {
+            item: payload,
+            id: id
+        }
+    };
+};
+const fetchNoteFailed = error => {
+    return {
+        type: FETCH_NOTE_FAILURE,
+        payload: {
+            error
+        }
+    };
+};
+
+//initiateNoteEdit
+export const initiateNoteEdit = (ownerId, id, title, message) => {
+    return dispatch => {
+        dispatch(initiateNoteEditStarted());
+
+        axios
+            .put("http://localhost/api/notes/" + id, {
+                "title": title,
+                "message": message,
+                "isPublic": true,
+                "owner": "/api/users/" + ownerId
+            }, {withCredentials: true})
+            .then(res => {
+                console.log(res);
+
+                dispatch(initiateNoteEditSuccess(res));
+            })
+            .catch(err => {
+                dispatch(initiateNoteEditFailed(err));
+            });
+    };
+};
+const initiateNoteEditStarted = () => {
+    return {
+        type: INITIATE_NOTE_EDIT_STARTED,
+        payload: {
+            isLoading: true
+        }
+    };
+};
+const initiateNoteEditSuccess = payload => {
+    return {
+        type: INITIATE_NOTE_EDIT_SUCCESS,
+        payload: {
+            payload
+        }
+    };
+};
+const initiateNoteEditFailed = error => {
+    return {
+        type: INITIATE_NOTE_EDIT_FAILURE,
         payload: {
             error
         }

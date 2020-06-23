@@ -4,7 +4,7 @@ import {getUserData, initiateLogout} from "../../actions";
 import {withRouter} from 'react-router';
 import {Link, Route, Switch} from "react-router-dom";
 import List from "./User/Notes/List";
-import NotesCreate from "./User/Notes/NotesCreate";
+import NotesCreateEdit from "./User/Notes/NotesCreateEdit";
 
 const mapStateToProps = (state) => {
     return {...state};
@@ -35,7 +35,7 @@ class User extends React.Component {
         }
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (null === this.props.user) {
+        if (null === this.props.user && null === this.state.user) {
             this.props.history.push('/');
         }
     }
@@ -72,7 +72,8 @@ class User extends React.Component {
                 </nav>
                 <Switch>
                     <Route path="/user/notes/list/:id(\d+)" component={List} />
-                    <Route path="/user/notes/create" component={NotesCreate} />
+                    <Route path="/user/notes/create" component={NotesCreateEdit} />
+                    <Route path="/user/notes/edit/:id(\d+)" component={NotesCreateEdit} />
                 </Switch>
                 <button onClick={this.handleLogoutClick}>Log out</button>
             </div>

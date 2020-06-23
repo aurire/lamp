@@ -39,7 +39,41 @@ class List extends React.Component {
 
         return '';
     }
+    getPager() {
+        if (this.props.notes[this.props.match.params.id]) {
+            let view = this.props.notes[this.props.match.params.id]['hydra:view'];
+            const first = view['hydra:first']
+                ? <Link to={"/user/notes/list/" + view['hydra:first'].split('?page=').pop()}>First</Link>
+                : '';
+            const next = view['hydra:next']
+                ? <Link to={"/user/notes/list/" + view['hydra:next'].split('?page=').pop()}>Next</Link>
+                : '';
+            const prev = view['hydra:previous']
+                ? <Link to={"/user/notes/list/" + view['hydra:previous'].split('?page=').pop()}>Previous</Link>
+                : '';
+            const last = view['hydra:last']
+                ? <Link to={"/user/notes/list/" + view['hydra:last'].split('?page=').pop()}>Last</Link>
+                : '';
+            const curPage = view['@id'].split('?page=').pop();
+            const space = <span> </span>;
+            const current = view['@id']
+                ? <span> {curPage} </span>
+                : '';
+            console.log(view);
+
+            return <p>{first} {space} {prev} {space} {current} {space} {next} {space} {last}</p>;
+        }
+    }
     componentDidMount() {
+        this.props.history.listen((location) => {
+            let pathParts = location.pathname.split('/');
+            const pageId = pathParts.pop();
+            const lastPart = pathParts.pop();
+            const preLastPart = pathParts.pop();
+            if (preLastPart === 'notes' && lastPart === 'list') {
+                this.props.fetchNotesList(pageId);
+            }
+        });
         this.props.fetchNotesList(this.props.match.params.id);
     }
 
@@ -48,6 +82,7 @@ class List extends React.Component {
             <div>
                 <p>This is user notes list, page: {this.props.match.params.id}</p>
                 {this.getNotes()}
+                {this.getPager()}
             </div>
         );
     }
