@@ -1,7 +1,8 @@
 import React from "react";
 import {withRouter} from "react-router";
 import {connect} from "react-redux";
-import {initiateNoteCreate, setAlert, fetchNote, initiateNoteEdit} from "../../../../actions";
+import {initiateNoteCreate, setAlert, fetchNote, initiateNoteEdit, deleteShare} from "../../../../actions";
+import {Link} from "react-router-dom";
 
 const CREATE = 'Create';
 const EDIT = 'Edit';
@@ -10,6 +11,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         initiateNoteCreate: (ownerId, title, message) => dispatch(initiateNoteCreate(ownerId, title, message)),
         initiateNoteEdit: (ownerId, id, title, message) => dispatch(initiateNoteEdit(ownerId, id, title, message)),
+        deleteShare: (id) => dispatch(deleteShare(id)),
         fetchNote: (id) => dispatch(fetchNote(id)),
         setAlert: (msg) => dispatch(setAlert(msg))
     };
@@ -26,11 +28,13 @@ class NotesCreateEdit extends React.Component {
         this.state = {
             title: '',
             message: '',
+            noteShares: null,
             error: null,
             refreshing: false
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
     }
     handleChange(event) {
         this.setState({
@@ -54,6 +58,11 @@ class NotesCreateEdit extends React.Component {
                 this.state.message
             );
         }
+    }
+    handleDelete(event) {
+        console.log('event.target');
+        console.log(event.target);
+        this.props.deleteShare(event.target.dataset.id.split('/').pop());
     }
     getCreateOrEdit() {
         if (this.props.match.params.id) {
@@ -85,7 +94,8 @@ class NotesCreateEdit extends React.Component {
                             ...this.state,
                             refreshing: false,
                             title: thisNote.title,
-                            message: thisNote.message
+                            message: thisNote.message,
+                            noteShares: thisNote.noteShares
                         }
                     );
                 }
@@ -103,10 +113,7 @@ class NotesCreateEdit extends React.Component {
             }
         }
         this.props.history.listen((location) => {
-            const ur = location.pathname.split('/').pop();
-            console.log('ur');
-            console.log(ur);
-            if (ur === 'create') {
+            if (location.pathname.split('/').pop() === 'create') {
                 if (this._isMounted) {
                     this.setState({
                         title: '',
@@ -141,11 +148,30 @@ class NotesCreateEdit extends React.Component {
             {error}
         </form>;
     }
+    getNoteShares() {
+        if (null === this.state.noteShares) {
+            return '';
+        }
+        const items = this.state.noteShares.map((noteShare) =>
+            <div key={noteShare['@id']}>
+                {noteShare['user']['email']}
+                {this.props.deleted.hasOwnProperty(noteShare['@id'].split('/').pop()) ? ' - Sharing removed ' : <button onClick={this.handleDelete} className="share-delete" data-id={noteShare['@id']}>Remove sharing</button>}
+
+            </div>
+        );
+
+        return <div>
+            <h2>Shared with:</h2>
+            {items}
+        </div>;
+    }
     render() {
+
         return (
             <div>
                 <h1>{this.getCreateOrEdit()} Note</h1>
                 {this.getForm()}
+                {this.getNoteShares()}
             </div>
         );
     }

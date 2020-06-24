@@ -21,7 +21,16 @@ import {
     FETCH_NOTE_FAILURE,
     INITIATE_NOTE_EDIT_SUCCESS,
     INITIATE_NOTE_EDIT_STARTED,
-    INITIATE_NOTE_EDIT_FAILURE
+    INITIATE_NOTE_EDIT_FAILURE,
+    INITIATE_NOTE_SHARE_SUCCESS,
+    INITIATE_NOTE_SHARE_STARTED,
+    INITIATE_NOTE_SHARE_FAILURE,
+    FETCH_SHARED_FOR_USER_SUCCESS,
+    FETCH_SHARED_FOR_USER_STARTED,
+    FETCH_SHARED_FOR_USER_FAILURE,
+    DELETE_SHARE_SUCCESS,
+    DELETE_SHARE_STARTED,
+    DELETE_SHARE_FAILURE
 } from "../constants/actionTypes";
 
 const initialState = {
@@ -35,7 +44,9 @@ const initialState = {
     alert: null,
     alertShown: true,
     notes: {},
-    note: {}
+    note: {},
+    shared: {},
+    deleted: {}
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -122,12 +133,14 @@ const rootReducer = (state = initialState, action) => {
                 ...state,
                 alert: null,
                 loaded: false,
+                deleted: {},
                 dataFetchFinished: false,
-                mainActionFinished: false,
+                mainActionFinished: false
             } : {
                 ...state,
                 alertShown: true,
-                loaded: false
+                loaded: false,
+                deleted: {}
             };
     } else if (SET_ALERT === action.type) {
         return {
@@ -227,6 +240,84 @@ const rootReducer = (state = initialState, action) => {
             error: null
         };
     } else if (INITIATE_NOTE_EDIT_FAILURE === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: false,
+            error: action.payload.error
+        };
+    } else if (INITIATE_NOTE_SHARE_STARTED === action.type) {
+        console.log('INITIATE_NOTE_SHARE_STARTED');
+        return {
+            ...state,
+            loading: true,
+            loaded: false
+        };
+    } else if (INITIATE_NOTE_SHARE_SUCCESS === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: true,
+            mainActionFinished: true,
+            error: null,
+            notes: {}
+        };
+    } else if (INITIATE_NOTE_SHARE_FAILURE === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: false,
+            error: action.payload.error
+        };
+    } else if (FETCH_SHARED_FOR_USER_STARTED === action.type) {
+        console.log('FETCH_SHARED_FOR_USER_STARTED');
+        return {
+            ...state,
+            loading: true,
+            loaded: false,
+        };
+    } else if (FETCH_SHARED_FOR_USER_SUCCESS === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: true,
+            dataFetchFinished: true,
+            error: null,
+            shared: {
+                ...state.shared,
+                [action.payload.page]: action.payload.item.data
+            }
+        };
+    } else if (FETCH_SHARED_FOR_USER_FAILURE === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: false,
+            dataFetchFinished: true,
+            error: action.payload.error
+        };
+    } else if (DELETE_SHARE_STARTED === action.type) {
+        console.log('DELETE_SHARE_STARTED');
+        return {
+            ...state,
+            loading: true,
+            loaded: false
+        };
+    } else if (DELETE_SHARE_SUCCESS === action.type) {
+        console.log('action.payload');
+        console.log(action.payload);
+        return {
+            ...state,
+            loading: false,
+            loaded: true,
+            error: null,
+            notes: {},
+            deleted: {
+                ...state.deleted,
+                [action.payload.id]: true
+            }
+        };
+    } else if (DELETE_SHARE_FAILURE === action.type) {
         return {
             ...state,
             loading: false,

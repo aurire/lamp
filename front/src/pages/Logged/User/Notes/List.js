@@ -42,6 +42,9 @@ class List extends React.Component {
     getPager() {
         if (this.props.notes[this.props.match.params.id]) {
             let view = this.props.notes[this.props.match.params.id]['hydra:view'];
+            if (false === view['@id'].includes('page=')) {
+                return '';
+            }
             const first = view['hydra:first']
                 ? <Link to={"/user/notes/list/" + view['hydra:first'].split('page=').pop()}>First</Link>
                 : '';
@@ -71,10 +74,14 @@ class List extends React.Component {
             const lastPart = pathParts.pop();
             const preLastPart = pathParts.pop();
             if (preLastPart === 'notes' && lastPart === 'list') {
-                this.props.fetchNotesList(this.props.user, pageId);
+                if (false === this.props.dataFetchFinished && false === this.props.loading) {
+                    this.props.fetchNotesList(this.props.user, pageId);
+                }
             }
         });
-        this.props.fetchNotesList(this.props.user, this.props.match.params.id);
+        if (false === this.props.dataFetchFinished && false === this.props.loading) {
+            this.props.fetchNotesList(this.props.user, this.props.match.params.id);
+        }
     }
 
     render() {

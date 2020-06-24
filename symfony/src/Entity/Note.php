@@ -33,7 +33,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *             "security" = "is_granted('EDIT', object)",
  *             "security_message" = "only creator can edit note"
  *         },
- *         "delete" = { "access_control" = "is_granted('ROLE_ADMIN')" }
+ *         "delete" = { "security" = "is_granted('EDIT', object)" }
  *     },
  *     normalizationContext={"groups"={"notes:read"}},
  *     denormalizationContext={"groups"={"notes:write"}},
@@ -65,7 +65,7 @@ class Note
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"notes:read", "notes:write", "user:read", "user:write"})
+     * @Groups({"notes:read", "notes:write", "user:read", "user:write", "share:read"})
      * @Assert\NotBlank()
      * @Assert\Length(
      *     min=2,
@@ -77,7 +77,7 @@ class Note
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"notes:read", "user:read"})
+     * @Groups({"notes:read", "user:read", "share:read"})
      * @Assert\NotBlank()
      * @Assert\Length(
      *     min=2,
@@ -190,7 +190,7 @@ class Note
     }
 
     /**
-     * @return Collection|ShareNoteToUser[]
+     * @Groups({"notes:item:get"})
      */
     public function getNoteShares(): Collection
     {

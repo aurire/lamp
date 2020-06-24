@@ -29,7 +29,10 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  *
  *     },
  *     itemOperations={
- *         "get" = {"security" = "is_granted('ROLE_USER')"},
+ *         "get" = {
+ *             "security" = "is_granted('IS_AUTHENTICATED_ANONYMOUSLY')",
+ *             "normalization_context"={"groups"={"user:read", "user:item:get"}}
+ *         },
  *         "put" = {"security" = "is_granted('ROLE_USER') and object == user"},
  *         "delete" = {"security" = "is_granted('ROLE_ADMIN')"}
  *     },
@@ -90,6 +93,7 @@ class User implements UserInterface
     private $phoneNumber;
 
     /**
+     * @Groups({"user:read", "user:write"})
      * @ORM\OneToMany(targetEntity=ShareNoteToUser::class, mappedBy="user", orphanRemoval=true)
      */
     private $sharedNotes;

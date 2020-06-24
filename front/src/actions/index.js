@@ -22,7 +22,16 @@ import {
     FETCH_NOTE_SUCCESS,
     INITIATE_NOTE_EDIT_FAILURE,
     INITIATE_NOTE_EDIT_STARTED,
-    INITIATE_NOTE_EDIT_SUCCESS
+    INITIATE_NOTE_EDIT_SUCCESS,
+    INITIATE_NOTE_SHARE_FAILURE,
+    INITIATE_NOTE_SHARE_STARTED,
+    INITIATE_NOTE_SHARE_SUCCESS,
+    FETCH_SHARED_FOR_USER_FAILURE,
+    FETCH_SHARED_FOR_USER_STARTED,
+    FETCH_SHARED_FOR_USER_SUCCESS,
+    DELETE_SHARE_FAILURE,
+    DELETE_SHARE_STARTED,
+    DELETE_SHARE_SUCCESS
 } from "../constants/actionTypes";
 import axios from "axios";
 
@@ -252,10 +261,9 @@ const initiateNoteCreateFailed = error => {
 export const fetchNotesList = (owner, page) => {
     return dispatch => {
         dispatch(fetchNoteListStarted());
-        const owner = 2;
 
         axios
-            .get("http://localhost/api/notes?owner=%2Fapi%2Fusers%2F" + owner
+            .get("http://localhost/api/notes?owner=" + owner
                 + "&page=" + page, {withCredentials: true})
             .then(res => {
                 console.log(res);
@@ -377,6 +385,140 @@ const initiateNoteEditSuccess = payload => {
 const initiateNoteEditFailed = error => {
     return {
         type: INITIATE_NOTE_EDIT_FAILURE,
+        payload: {
+            error
+        }
+    };
+};
+
+//initiateNoteShare
+export const initiateNoteShare = (note, user) => {
+    return dispatch => {
+        dispatch(initiateNoteShareStarted());
+
+        axios
+            .post("http://localhost/api/share_note_to_users", {
+                "note": note,
+                "user": user
+            }, {withCredentials: true})
+            .then(res => {
+                console.log(res);
+
+                dispatch(initiateNoteShareSuccess(res));
+            })
+            .catch(err => {
+                dispatch(initiateNoteShareFailed(err));
+            });
+    };
+};
+const initiateNoteShareStarted = () => {
+    return {
+        type: INITIATE_NOTE_SHARE_STARTED,
+        payload: {
+            isLoading: true
+        }
+    };
+};
+const initiateNoteShareSuccess = payload => {
+    return {
+        type: INITIATE_NOTE_SHARE_SUCCESS,
+        payload: {
+            payload
+        }
+    };
+};
+const initiateNoteShareFailed = error => {
+    return {
+        type: INITIATE_NOTE_SHARE_FAILURE,
+        payload: {
+            error
+        }
+    };
+};
+
+//fetchSharedForUser
+export const fetchSharedForUser = (id, page) => {
+    return dispatch => {
+        dispatch(fetchSharedForUserStarted());
+
+        axios
+            .get(
+                "http://localhost/api/share_note_to_users?user=" + id + "&page=" + page,
+                {withCredentials: true}
+                )
+            .then(res => {
+                console.log(res);
+
+                dispatch(fetchSharedForUserSuccess(res, page));
+            })
+            .catch(err => {
+                dispatch(fetchSharedForUserFailed(err));
+            });
+    };
+};
+const fetchSharedForUserStarted = () => {
+    return {
+        type: FETCH_SHARED_FOR_USER_STARTED,
+        payload: {
+            isLoading: true
+        }
+    };
+};
+const fetchSharedForUserSuccess = (payload, page) => {
+    return {
+        type: FETCH_SHARED_FOR_USER_SUCCESS,
+        payload: {
+            item: payload,
+            page: page
+        }
+    };
+};
+const fetchSharedForUserFailed = error => {
+    return {
+        type: FETCH_SHARED_FOR_USER_FAILURE,
+        payload: {
+            error
+        }
+    };
+};
+
+//deleteShare
+export const deleteShare = (id) => {
+    return dispatch => {
+        dispatch(deleteShareStarted());
+
+        axios
+            .delete(
+                "http://localhost/api/share_note_to_users/" + id,
+                {withCredentials: true}
+            )
+            .then(res => {
+                dispatch(deleteShareSuccess(id));
+            })
+            .catch(err => {
+                dispatch(deleteShareFailed(err));
+            });
+    };
+};
+const deleteShareStarted = () => {
+    return {
+        type: DELETE_SHARE_STARTED,
+        payload: {
+            isLoading: true
+        }
+    };
+};
+const deleteShareSuccess = (id) => {
+    return {
+        type: DELETE_SHARE_SUCCESS,
+        payload: {
+            id: id
+        }
+    };
+};
+const deleteShareFailed = error => {
+    return {
+        type: DELETE_SHARE_FAILURE,
         payload: {
             error
         }

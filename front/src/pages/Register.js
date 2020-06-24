@@ -47,7 +47,6 @@ class Register extends React.Component {
     }
 
     render() {
-        console.log('render');
         let error = '';
         if (this.props.error !== null) {
             if (

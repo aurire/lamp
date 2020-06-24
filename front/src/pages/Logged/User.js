@@ -5,6 +5,8 @@ import {withRouter} from 'react-router';
 import {Link, Route, Switch} from "react-router-dom";
 import List from "./User/Notes/List";
 import NotesCreateEdit from "./User/Notes/NotesCreateEdit";
+import NotesShare from "./User/Notes/NotesShare";
+import NotesSharedWithMe from "./User/Notes/NotesSharedWithMe";
 
 const mapStateToProps = (state) => {
     return {...state};
@@ -35,7 +37,7 @@ class User extends React.Component {
         }
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (null === this.props.user && null === this.state.user) {
+        if (null === this.props.user && true === this.props.loaded) {
             this.props.history.push('/');
         }
     }
@@ -63,7 +65,7 @@ class User extends React.Component {
                             <Link to="/user/notes/create">Create note</Link>
                         </li>
                         <li>
-                            <Link to="/user/notes/list/shared-with-me">Notes shared with me</Link>
+                            <Link to="/user/notes/list/shared-with-me/1">Notes shared with me</Link>
                         </li>
                         <li>
                             <Link to="/user/notes/list/shared-by-me">My shared notes</Link>
@@ -74,11 +76,12 @@ class User extends React.Component {
                     <Route path="/user/notes/list/:id(\d+)" component={List} />
                     <Route path="/user/notes/create" component={NotesCreateEdit} />
                     <Route path="/user/notes/edit/:id(\d+)" component={NotesCreateEdit} />
+                    <Route path="/user/notes/share/:id(\d+)" component={NotesShare} />
+                    <Route path="/user/notes/list/shared-with-me/:id(\d+)" component={NotesSharedWithMe} />
                 </Switch>
                 <button onClick={this.handleLogoutClick}>Log out</button>
             </div>
         );
-
     }
 }
 
