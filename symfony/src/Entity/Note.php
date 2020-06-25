@@ -33,7 +33,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *             "security" = "is_granted('EDIT', object)",
  *             "security_message" = "only creator can edit note"
  *         },
- *         "delete" = { "security" = "is_granted('EDIT', object)" }
+ *         "delete" = { "security" = "is_granted('EDIT', object)", "security_message" = "only creator can delete note" }
  *     },
  *     normalizationContext={"groups"={"notes:read"}},
  *     denormalizationContext={"groups"={"notes:write"}},
@@ -44,7 +44,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Entity(repositoryClass=NoteRepository::class)
  * @ApiFilter(BooleanFilter::class, properties={"isPublic"})
- * @ApiFilter(SearchFilter::class, properties={"owner": "exact", "partial", "title": "partial", "message": "partial"})
+ * @ApiFilter(SearchFilter::class, properties={"owner": "exact", "title": "partial", "message": "partial"})
  * @ApiFilter(PropertyFilter::class)
  */
 class Note

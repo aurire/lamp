@@ -14,6 +14,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @ApiResource(
@@ -42,6 +43,7 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  * @UniqueEntity(fields={"email"})
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ApiFilter(PropertyFilter::class)
+ * @ApiFilter(SearchFilter::class, properties={"email": "partial"})
  */
 class User implements UserInterface
 {

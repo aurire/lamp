@@ -60,8 +60,6 @@ class NotesCreateEdit extends React.Component {
         }
     }
     handleDelete(event) {
-        console.log('event.target');
-        console.log(event.target);
         this.props.deleteShare(event.target.dataset.id.split('/').pop());
     }
     getCreateOrEdit() {
@@ -155,8 +153,12 @@ class NotesCreateEdit extends React.Component {
         const items = this.state.noteShares.map((noteShare) =>
             <div key={noteShare['@id']}>
                 {noteShare['user']['email']}
-                {this.props.deleted.hasOwnProperty(noteShare['@id'].split('/').pop()) ? ' - Sharing removed ' : <button onClick={this.handleDelete} className="share-delete" data-id={noteShare['@id']}>Remove sharing</button>}
-
+                {
+                    this.props.deleted.hasOwnProperty(noteShare['@id'].split('/').pop())
+                    ? ' - Sharing removed '
+                    : <button onClick={this.handleDelete} className="share-delete" data-id={noteShare['@id']}>
+                        Remove sharing</button>
+                }
             </div>
         );
 
@@ -172,6 +174,7 @@ class NotesCreateEdit extends React.Component {
                 <h1>{this.getCreateOrEdit()} Note</h1>
                 {this.getForm()}
                 {this.getNoteShares()}
+                <Link to={"/user/notes/share/" + this.props.match.params.id}>Share this note</Link>
             </div>
         );
     }

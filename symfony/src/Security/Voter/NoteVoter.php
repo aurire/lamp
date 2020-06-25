@@ -35,7 +35,7 @@ class NoteVoter extends Voter
         /** @var Note $subject */
         switch ($attribute) {
             case 'EDIT':
-                if ($subject->getOwner() === $user) {
+                if ($subject->getOwner()->getId() === $user->getId()) {
                     return true;
                 }
 

@@ -7,6 +7,7 @@ import List from "./User/Notes/List";
 import NotesCreateEdit from "./User/Notes/NotesCreateEdit";
 import NotesShare from "./User/Notes/NotesShare";
 import NotesSharedWithMe from "./User/Notes/NotesSharedWithMe";
+import UserSettings from "./User/UserSettings";
 
 const mapStateToProps = (state) => {
     return {...state};
@@ -67,9 +68,6 @@ class User extends React.Component {
                         <li>
                             <Link to="/user/notes/list/shared-with-me/1">Notes shared with me</Link>
                         </li>
-                        <li>
-                            <Link to="/user/notes/list/shared-by-me">My shared notes</Link>
-                        </li>
                     </ul>
                 </nav>
                 <Switch>
@@ -78,6 +76,7 @@ class User extends React.Component {
                     <Route path="/user/notes/edit/:id(\d+)" component={NotesCreateEdit} />
                     <Route path="/user/notes/share/:id(\d+)" component={NotesShare} />
                     <Route path="/user/notes/list/shared-with-me/:id(\d+)" component={NotesSharedWithMe} />
+                    <Route path="/user/settings" component={UserSettings} />
                 </Switch>
                 <button onClick={this.handleLogoutClick}>Log out</button>
             </div>

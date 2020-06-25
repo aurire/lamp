@@ -28,18 +28,23 @@ class AppRouter extends React.Component {
     }
 
     render() {
+        const loading = this.props.loading ? <div>Loading...</div> : '';
+
         return (
-            <Switch>
-                <Route exact path="/">
-                    <Login />
-                </Route>
-                <Route exact path="/register">
-                    <Register />
-                </Route>
-                <Route path="/user/">
-                    <User />
-                </Route>
-            </Switch>
+            <div>
+                {loading}
+                <Switch>
+                    <Route exact path="/">
+                        <Login />
+                    </Route>
+                    <Route exact path="/register">
+                        <Register />
+                    </Route>
+                    <Route path="/user/">
+                        <User />
+                    </Route>
+                </Switch>
+            </div>
         );
     }
 };

@@ -2,11 +2,12 @@ import React from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router";
 import {Link} from "react-router-dom";
-import {fetchNotesList, setAlert} from "../../../../actions";
+import {fetchNotesList, setAlert, deleteNote} from "../../../../actions";
 
 const mapDispatchToProps = (dispatch) => {
     return {
         fetchNotesList: (owner, page) => dispatch(fetchNotesList(owner, page)),
+        deleteNote: (id) => dispatch(deleteNote(id)),
         setAlert: (msg) => dispatch(setAlert(msg))
     };
 };
@@ -17,6 +18,17 @@ const mapStateToProps = (state) => {
 
 //http://localhost/api/notes?page=1
 class List extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            msg: ''
+        };
+        this.onDeleteClick = this.onDeleteClick.bind(this);
+    }
+    onDeleteClick(event) {
+        event.preventDefault();
+        this.props.deleteNote(event.target.dataset.id.split('/').pop());
+    }
     getNotes() {
         if (this.props.notes[this.props.match.params.id]) {
             let notes = this.props.notes[this.props.match.params.id]['hydra:member'];
@@ -30,6 +42,8 @@ class List extends React.Component {
                   <Link to={"/user/notes/edit/" + note['@id'].split('/').pop()}>Edit Note</Link>
                   <span> </span>
                   <Link to={"/user/notes/share/" + note['@id'].split('/').pop()}>Share Note</Link>
+                  <span> </span>
+                  <a href="#" data-id={note['@id'].split('/').pop()} onClick={this.onDeleteClick} >Delete Note</a>
                   <hr />
               </div>
             );
@@ -75,12 +89,23 @@ class List extends React.Component {
             const preLastPart = pathParts.pop();
             if (preLastPart === 'notes' && lastPart === 'list') {
                 if (false === this.props.dataFetchFinished && false === this.props.loading) {
-                    this.props.fetchNotesList(this.props.user, pageId);
+                    let user = null === this.props.user ? localStorage.getItem('user') : this.props.user;
+                    this.props.fetchNotesList(user, pageId);
                 }
             }
         });
         if (false === this.props.dataFetchFinished && false === this.props.loading) {
-            this.props.fetchNotesList(this.props.user, this.props.match.params.id);
+            let user = null === this.props.user ? localStorage.getItem('user') : this.props.user;
+            this.props.fetchNotesList(user, this.props.match.params.id);
+        }
+    }
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (Object.keys(this.props.deleted).length > 0) {
+            let user = null === this.props.user ? localStorage.getItem('user') : this.props.user;
+            this.props.fetchNotesList(user, this.props.match.params.id);
+            if (this.state.msg !== "Note deleted succesfuly") {
+                this.setState({msg: "Note deleted succesfuly"});
+            }
         }
     }
 
@@ -88,6 +113,7 @@ class List extends React.Component {
         return (
             <div>
                 <p>This is user notes list, page: {this.props.match.params.id}</p>
+                <p>{this.state.msg}</p>
                 {this.getNotes()}
                 {this.getPager()}
             </div>

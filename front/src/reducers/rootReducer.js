@@ -30,13 +30,23 @@ import {
     FETCH_SHARED_FOR_USER_FAILURE,
     DELETE_SHARE_SUCCESS,
     DELETE_SHARE_STARTED,
-    DELETE_SHARE_FAILURE
+    DELETE_SHARE_FAILURE,
+    DELETE_NOTE_SUCCESS,
+    DELETE_NOTE_STARTED,
+    DELETE_NOTE_FAILURE,
+    INITIATE_USER_UPDATE_SUCCESS,
+    INITIATE_USER_UPDATE_FAILURE,
+    INITIATE_USER_UPDATE_STARTED,
+    FETCH_BY_EMAIL_SUCCESS,
+    FETCH_BY_EMAIL_STARTED,
+    FETCH_BY_EMAIL_FAILURE
 } from "../constants/actionTypes";
 
 const initialState = {
     loading: false,
     loaded: false,
     dataFetchFinished: false,
+    userFetchFinished: false,
     mainActionFinished: false,
     error: null,
     userData: null,
@@ -46,7 +56,8 @@ const initialState = {
     notes: {},
     note: {},
     shared: {},
-    deleted: {}
+    deleted: {},
+    search: {}
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -62,6 +73,7 @@ const rootReducer = (state = initialState, action) => {
             ...state,
             loading: false,
             loaded: true,
+            userFetchFinished: false,
             error: null,
             user: action.payload.payload.headers.location
         };
@@ -69,6 +81,7 @@ const rootReducer = (state = initialState, action) => {
         return {
             ...state,
             loading: false,
+            userFetchFinished: false,
             loaded: false,
             error: action.payload.error
         };
@@ -78,6 +91,7 @@ const rootReducer = (state = initialState, action) => {
             ...state,
             loading: false,
             loaded: true,
+            userFetchFinished: true,
             userData: action.payload.payload.data,
             user: action.payload.payload.data['@id']
         };
@@ -134,13 +148,17 @@ const rootReducer = (state = initialState, action) => {
                 alert: null,
                 loaded: false,
                 deleted: {},
+                search: {},
                 dataFetchFinished: false,
                 mainActionFinished: false
             } : {
                 ...state,
                 alertShown: true,
                 loaded: false,
-                deleted: {}
+                deleted: {},
+                search: {},
+                dataFetchFinished: false,
+                mainActionFinished: false
             };
     } else if (SET_ALERT === action.type) {
         return {
@@ -184,6 +202,7 @@ const rootReducer = (state = initialState, action) => {
             loading: false,
             loaded: true,
             error: null,
+            deleted: {},
             notes: {
                 ...state.notes,
                 [action.payload.page]: action.payload.items.data
@@ -322,6 +341,86 @@ const rootReducer = (state = initialState, action) => {
             ...state,
             loading: false,
             loaded: false,
+            error: action.payload.error
+        };
+    } else if (DELETE_NOTE_STARTED === action.type) {
+        return {
+            ...state,
+            loading: true,
+            loaded: false
+        };
+    } else if (DELETE_NOTE_SUCCESS === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: true,
+            error: null,
+            deleted: {
+                ...state.deleted,
+                [action.payload.id]: true
+            }
+        };
+    } else if (DELETE_NOTE_FAILURE === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: false,
+            error: action.payload.error
+        };
+    } else if (INITIATE_USER_UPDATE_STARTED === action.type) {
+        console.log('INITIATE_USER_UPDATE_STARTED');
+        return {
+            ...state,
+            loading: true,
+            loaded: false
+        };
+    } else if (INITIATE_USER_UPDATE_SUCCESS === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: true,
+            mainActionFinished: true,
+            userFetchFinished: true,
+            userData: action.payload.payload.data,
+            user: action.payload.payload.data['@id'],
+            notes: {},
+            error: null
+        };
+    } else if (INITIATE_USER_UPDATE_FAILURE === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: false,
+            error: action.payload.error
+        };
+    } else if (FETCH_BY_EMAIL_STARTED === action.type) {
+        console.log('FETCH_BY_EMAIL_STARTED');
+        return {
+            ...state,
+            loading: true,
+            loaded: false,
+        };
+    } else if (FETCH_BY_EMAIL_SUCCESS === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: true,
+            dataFetchFinished: true,
+            error: null,
+            search: {
+                ...state.search,
+                [action.payload.email]: {
+                    ...state.search[[action.payload.email]],
+                    [action.payload.page]: action.payload.item.data
+                }
+            }
+        };
+    } else if (FETCH_BY_EMAIL_FAILURE === action.type) {
+        return {
+            ...state,
+            loading: false,
+            loaded: false,
+            dataFetchFinished: true,
             error: action.payload.error
         };
     }

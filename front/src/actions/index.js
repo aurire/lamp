@@ -31,7 +31,16 @@ import {
     FETCH_SHARED_FOR_USER_SUCCESS,
     DELETE_SHARE_FAILURE,
     DELETE_SHARE_STARTED,
-    DELETE_SHARE_SUCCESS
+    DELETE_SHARE_SUCCESS,
+    DELETE_NOTE_FAILURE,
+    DELETE_NOTE_STARTED,
+    DELETE_NOTE_SUCCESS,
+    INITIATE_USER_UPDATE_STARTED,
+    INITIATE_USER_UPDATE_FAILURE,
+    INITIATE_USER_UPDATE_SUCCESS,
+    FETCH_BY_EMAIL_FAILURE,
+    FETCH_BY_EMAIL_STARTED,
+    FETCH_BY_EMAIL_SUCCESS
 } from "../constants/actionTypes";
 import axios from "axios";
 
@@ -519,6 +528,141 @@ const deleteShareSuccess = (id) => {
 const deleteShareFailed = error => {
     return {
         type: DELETE_SHARE_FAILURE,
+        payload: {
+            error
+        }
+    };
+};
+
+//deleteNote
+export const deleteNote = (id) => {
+    return dispatch => {
+        dispatch(deleteNoteStarted());
+
+        axios
+            .delete(
+                "http://localhost/api/notes/" + id,
+                {withCredentials: true}
+            )
+            .then(res => {
+                dispatch(deleteNoteSuccess(id));
+            })
+            .catch(err => {
+                dispatch(deleteNoteFailed(err));
+            });
+    };
+};
+const deleteNoteStarted = () => {
+    return {
+        type: DELETE_NOTE_STARTED,
+        payload: {
+            isLoading: true
+        }
+    };
+};
+const deleteNoteSuccess = (id) => {
+    return {
+        type: DELETE_NOTE_SUCCESS,
+        payload: {
+            id: id
+        }
+    };
+};
+const deleteNoteFailed = error => {
+    return {
+        type: DELETE_NOTE_FAILURE,
+        payload: {
+            error
+        }
+    };
+};
+
+//initiateUserUpdate
+export const initiateUserUpdate = (id, phone) => {
+    return dispatch => {
+        dispatch(initiateUserUpdateStarted());
+
+        axios
+            .put("http://localhost/api/users/" + id, {
+                "phoneNumber": phone
+            }, {withCredentials: true})
+            .then(res => {
+                console.log(res);
+
+                dispatch(initiateUserUpdateSuccess(res));
+            })
+            .catch(err => {
+                dispatch(initiateUserUpdateFailed(err));
+            });
+    };
+};
+const initiateUserUpdateStarted = () => {
+    return {
+        type: INITIATE_USER_UPDATE_STARTED,
+        payload: {
+            isLoading: true
+        }
+    };
+};
+const initiateUserUpdateSuccess = payload => {
+    return {
+        type: INITIATE_USER_UPDATE_SUCCESS,
+        payload: {
+            payload
+        }
+    };
+};
+const initiateUserUpdateFailed = error => {
+    return {
+        type: INITIATE_USER_UPDATE_FAILURE,
+        payload: {
+            error
+        }
+    };
+};
+
+//fetchByEmail
+export const fetchByEmail = (email, page) => {
+    return dispatch => {
+        dispatch(fetchByEmailStarted());
+
+        axios
+            .get(
+                "http://localhost/api/users?properties%5B%5D=email&properties%5B%5D=id&email="
+                + encodeURIComponent(email) + "&page=" + page,
+                {withCredentials: true}
+            )
+            .then(res => {
+                console.log(res);
+
+                dispatch(fetchByEmailSuccess(res, email, page));
+            })
+            .catch(err => {
+                dispatch(fetchByEmailFailed(err));
+            });
+    };
+};
+const fetchByEmailStarted = () => {
+    return {
+        type: FETCH_BY_EMAIL_STARTED,
+        payload: {
+            isLoading: true
+        }
+    };
+};
+const fetchByEmailSuccess = (payload, email, page) => {
+    return {
+        type: FETCH_BY_EMAIL_SUCCESS,
+        payload: {
+            item: payload,
+            email: email,
+            page: page
+        }
+    };
+};
+const fetchByEmailFailed = error => {
+    return {
+        type: FETCH_BY_EMAIL_FAILURE,
         payload: {
             error
         }

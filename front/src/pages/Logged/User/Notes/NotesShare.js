@@ -1,12 +1,12 @@
 import React from "react";
 import {connect} from 'react-redux';
-import {fetchNote, initiateNoteShare, setAlert} from "../../../../actions";
+import {initiateNoteShare, setAlert, fetchByEmail} from "../../../../actions";
 
 const mapDispatchToProps = (dispatch) => {
     return {
         initiateNoteShare: (note, user) => dispatch(initiateNoteShare(note, user)),
-        fetchNote: (id) => dispatch(fetchNote(id)),
-        setAlert: (msg) => dispatch(setAlert(msg))
+        setAlert: (msg) => dispatch(setAlert(msg)),
+        fetchByEmail: (email, page) => dispatch(fetchByEmail(email, page))
     };
 };
 
@@ -18,10 +18,12 @@ class NotesShare extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            user: ''
+            user: '',
+            userid: 0
         };
         this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
+        this.handleShareSubmit = this.handleShareSubmit.bind(this);
     }
     handleChange(event) {
         this.setState({
@@ -29,11 +31,17 @@ class NotesShare extends React.Component {
             [event.target.id]: event.target.value
         });
     }
-    handleSubmit(event) {
+    handleSearchSubmit(event) {
+        event.preventDefault();
+        this.props.fetchByEmail(this.state.user, 1);
+
+        return false;
+    }
+    handleShareSubmit(event) {
         event.preventDefault();
         this.props.initiateNoteShare(
             "/api/notes/" + this.props.match.params.id,
-            this.state.user
+            this.state.userid
         );
 
         return false;
@@ -68,20 +76,47 @@ class NotesShare extends React.Component {
 
         return (
             <div>
-                <form onSubmit={this.handleSubmit}>
-                    <label htmlFor="user">User</label>
+                <form onSubmit={this.handleSearchSubmit}>
+                    <label htmlFor="user">Email</label>
                     <input name="user" onChange={this.handleChange} id="user" value={this.state.user} />
-                    <input type="submit" value="Share" />
+                    <input type="submit" value="Search" />
                 </form>
                 <p>{error}</p>
             </div>
         );
     }
+    getResults() {
+        if (this.props.search[this.state.user]) {
+            let res = this.props.search[this.state.user][1]['hydra:member'];
+
+            var results = res.filter(function(result) {
+                if (result.isMe) {
+                    return false;
+                }
+                return true;
+            }).map(function(result) {
+                return <option value={result['@id']} key={result['@id']}>{result.email}</option>;
+            });
+
+            return (
+                <form onSubmit={this.handleShareSubmit}>
+                    <select id="userid" name="userid" onChange={this.handleChange}>
+                        {results}
+                    </select>
+                    <input type="submit" value="Share" />
+                </form>
+            );
+        }
+
+        return '';
+    }
     render() {
         return (
             <div>
-                <p>PlaceholderNotesShare{this.props.match.params.id}</p>
+                <h1>Share a note</h1>
+                <p>Begin by searching for a user by his email. Then hit share to share with him.</p>
                 {this.getForm()}
+                {this.getResults()}
             </div>
         );
     }
