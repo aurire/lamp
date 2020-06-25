@@ -88,8 +88,8 @@ class Login extends React.Component {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto">
-                            <Nav.Link disabled href="/">Login</Nav.Link>
-                            <Nav.Link href="/register">Register</Nav.Link>
+                            <Nav.Link as={Link} disabled to="/">Login</Nav.Link>
+                            <Nav.Link as={Link} to="/register">Register</Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
                 </Navbar>

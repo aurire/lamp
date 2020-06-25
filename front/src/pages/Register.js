@@ -53,7 +53,7 @@ class Register extends React.Component {
 
     render() {
         let error = '';
-        if (this.props.error !== null) {
+        if (this.props.error) {
             if (
                 this.props.error.response
                 && this.props.error.response.data
@@ -76,8 +76,8 @@ class Register extends React.Component {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto">
-                            <Nav.Link href="/">Login</Nav.Link>
-                            <Nav.Link disabled href="/register">Register</Nav.Link>
+                            <Nav.Link as={Link} to="/">Login</Nav.Link>
+                            <Nav.Link as={Link} disabled to="/register">Register</Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
                 </Navbar>

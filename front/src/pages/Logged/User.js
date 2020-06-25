@@ -62,10 +62,10 @@ class User extends React.Component {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto">
-                            <Nav.Link href="/user/settings">Settings</Nav.Link>
-                            <Nav.Link href="/user/notes/list/1">Notes</Nav.Link>
-                            <Nav.Link href="/user/notes/create">Create Note</Nav.Link>
-                            <Nav.Link href="/user/notes/list/shared-with-me/1">Notes shared with me</Nav.Link>
+                            <Nav.Link as={Link} to="/user/settings">Settings</Nav.Link>
+                            <Nav.Link as={Link} to="/user/notes/list/1">Notes</Nav.Link>
+                            <Nav.Link as={Link} to="/user/notes/create">Create Note</Nav.Link>
+                            <Nav.Link as={Link} to="/user/notes/list/shared-with-me/1">Notes shared with me</Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
                     <Navbar.Brand className="navbar-right"><span style={{color: "grey"}}>User email:</span> {email}</Navbar.Brand>
