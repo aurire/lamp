@@ -43,7 +43,7 @@ class Register extends React.Component {
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (null !== this.props.userData) {
-            this.props.history.push('/user/');
+            this.props.history.push('/user/notes/list/1');
         }
         if (true === this.props.loaded) {
             this.props.setAlert('Succesfuly registered');
@@ -54,7 +54,6 @@ class Register extends React.Component {
     render() {
         let error = '';
         if (this.props.error !== null) {
-            console.log(this.props.error.response);
             if (
                 this.props.error.response
                 && this.props.error.response.data

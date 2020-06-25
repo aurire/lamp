@@ -44,6 +44,8 @@ import {
 } from "../constants/actionTypes";
 import axios from "axios";
 
+const HOST = 'http://localhost/';
+
 //getUserData
 export const getUserData = (id) => {
     return dispatch => {
@@ -51,12 +53,11 @@ export const getUserData = (id) => {
         if (id !== null) {
             let userId = id.split('/');
             axios
-                .get("http://localhost/api/users/" + userId.pop(), {withCredentials: true})
+                .get(HOST + "api/users/" + userId.pop(), {withCredentials: true})
                 .then(res => {
                     dispatch(getUserDataSuccess(res));
                 })
                 .catch(err => {
-                    console.log(err);
                     //dispatch(getUserDataFailed(err.message));
                 });
         }
@@ -77,7 +78,7 @@ export const initiateLogin = (email, password) => {
         dispatch(initiateLoginStarted());
 
         axios
-            .post("http://localhost/login", {
+            .post(HOST + "login", {
                 "email": email,
                 "password": password
             })
@@ -85,9 +86,7 @@ export const initiateLogin = (email, password) => {
                 if (res.headers.location) {
                     localStorage.setItem('user', res.headers.location);
                 }
-                console.log(res.headers.location);
                 dispatch(getUserData(res.headers.location));
-
                 dispatch(initiateLoginSuccess(res));
             })
             .catch(err => {
@@ -125,13 +124,12 @@ export const initiateLogout = () => {
     return dispatch => {
         dispatch(initiateLogoutStarted());
         axios
-            .post("http://localhost/logout")
+            .post(HOST + "logout")
             .then(res => {
                 localStorage.removeItem('user');
                 dispatch(initiateLogoutSuccess(res));
             })
             .catch(err => {
-                console.log(err);
                 dispatch(initiateLogoutFailed(err.message));
             });
     };
@@ -167,13 +165,11 @@ export const initiateRegister = (email, password) => {
         dispatch(initiateRegisterStarted());
 
         axios
-            .post("http://localhost/api/users", {
+            .post(HOST + "api/users", {
                 "email": email,
                 "password": password
             }, {withCredentials: true})
             .then(res => {
-                console.log(res.headers.location);
-
                 dispatch(initiateRegisterSuccess(res));
             })
             .catch(err => {
@@ -225,15 +221,13 @@ export const initiateNoteCreate = (ownerId, title, message) => {
         dispatch(initiateNoteCreateStarted());
 
         axios
-            .post("http://localhost/api/notes", {
+            .post(HOST + "api/notes", {
                 "title": title,
                 "message": message,
                 "isPublic": true,
                 "owner": "/api/users/" + ownerId
             }, {withCredentials: true})
             .then(res => {
-                console.log(res);
-
                 dispatch(initiateNoteCreateSuccess(res));
             })
             .catch(err => {
@@ -272,11 +266,9 @@ export const fetchNotesList = (owner, page) => {
         dispatch(fetchNoteListStarted());
 
         axios
-            .get("http://localhost/api/notes?owner=" + owner
+            .get(HOST + "api/notes?owner=" + owner
                 + "&page=" + page, {withCredentials: true})
             .then(res => {
-                console.log(res);
-
                 dispatch(fetchNoteListSuccess(res, page));
             })
             .catch(err => {
@@ -316,10 +308,8 @@ export const fetchNote = (id) => {
         dispatch(fetchNoteStarted());
 
         axios
-            .get("http://localhost/api/notes/" + id, {withCredentials: true})
+            .get(HOST + "api/notes/" + id, {withCredentials: true})
             .then(res => {
-                console.log(res);
-
                 dispatch(fetchNoteSuccess(res, id));
             })
             .catch(err => {
@@ -359,15 +349,13 @@ export const initiateNoteEdit = (ownerId, id, title, message) => {
         dispatch(initiateNoteEditStarted());
 
         axios
-            .put("http://localhost/api/notes/" + id, {
+            .put(HOST + "api/notes/" + id, {
                 "title": title,
                 "message": message,
                 "isPublic": true,
                 "owner": "/api/users/" + ownerId
             }, {withCredentials: true})
             .then(res => {
-                console.log(res);
-
                 dispatch(initiateNoteEditSuccess(res));
             })
             .catch(err => {
@@ -406,13 +394,11 @@ export const initiateNoteShare = (note, user) => {
         dispatch(initiateNoteShareStarted());
 
         axios
-            .post("http://localhost/api/share_note_to_users", {
+            .post(HOST + "api/share_note_to_users", {
                 "note": note,
                 "user": user
             }, {withCredentials: true})
             .then(res => {
-                console.log(res);
-
                 dispatch(initiateNoteShareSuccess(res));
             })
             .catch(err => {
@@ -452,12 +438,10 @@ export const fetchSharedForUser = (id, page) => {
 
         axios
             .get(
-                "http://localhost/api/share_note_to_users?user=" + id + "&page=" + page,
+                HOST + "api/share_note_to_users?user=" + id + "&page=" + page,
                 {withCredentials: true}
                 )
             .then(res => {
-                console.log(res);
-
                 dispatch(fetchSharedForUserSuccess(res, page));
             })
             .catch(err => {
@@ -498,7 +482,7 @@ export const deleteShare = (id) => {
 
         axios
             .delete(
-                "http://localhost/api/share_note_to_users/" + id,
+                HOST + "api/share_note_to_users/" + id,
                 {withCredentials: true}
             )
             .then(res => {
@@ -541,7 +525,7 @@ export const deleteNote = (id) => {
 
         axios
             .delete(
-                "http://localhost/api/notes/" + id,
+                HOST + "api/notes/" + id,
                 {withCredentials: true}
             )
             .then(res => {
@@ -583,12 +567,10 @@ export const initiateUserUpdate = (id, phone) => {
         dispatch(initiateUserUpdateStarted());
 
         axios
-            .put("http://localhost/api/users/" + id, {
+            .put(HOST + "api/users/" + id, {
                 "phoneNumber": phone
             }, {withCredentials: true})
             .then(res => {
-                console.log(res);
-
                 dispatch(initiateUserUpdateSuccess(res));
             })
             .catch(err => {
@@ -628,13 +610,11 @@ export const fetchByEmail = (email, page) => {
 
         axios
             .get(
-                "http://localhost/api/users?properties%5B%5D=email&properties%5B%5D=id&email="
+                HOST + "api/users?properties%5B%5D=email&properties%5B%5D=id&email="
                 + encodeURIComponent(email) + "&page=" + page,
                 {withCredentials: true}
             )
             .then(res => {
-                console.log(res);
-
                 dispatch(fetchByEmailSuccess(res, email, page));
             })
             .catch(err => {

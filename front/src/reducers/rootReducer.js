@@ -62,7 +62,6 @@ const initialState = {
 
 const rootReducer = (state = initialState, action) => {
     if (INITIATE_LOGIN_STARTED === action.type) {
-        console.log('INITIATE_LOGIN_STARTED');
         return {
             ...state,
             loading: true,
@@ -86,7 +85,6 @@ const rootReducer = (state = initialState, action) => {
             error: action.payload.error
         };
     } else if (GET_USER_DATA_SUCCESS === action.type) {
-        console.log('GET_USER_DATA_SUCCESS');
         return {
             ...state,
             loading: false,
@@ -96,14 +94,12 @@ const rootReducer = (state = initialState, action) => {
             user: action.payload.payload.data['@id']
         };
     } else if (INITIATE_LOGOUT_STARTED === action.type) {
-        console.log('INITIATE_LOGOUT_STARTED');
         return {
             ...state,
             loading: true,
             loaded: false,
         };
     } else if (INITIATE_LOGOUT_SUCCESS === action.type) {
-        console.log('INITIATE_LOGOUT_SUCCESS');
         return {
             ...state,
             loading: false,
@@ -113,7 +109,6 @@ const rootReducer = (state = initialState, action) => {
             user: null
         };
     } else if (INITIATE_LOGOUT_FAILURE === action.type) {
-        console.log('INITIATE_LOGOUT_FAILURE');
         return {
             ...state,
             loading: false,
@@ -121,7 +116,6 @@ const rootReducer = (state = initialState, action) => {
             error: action.payload.error
         };
     } else if (INITIATE_REGISTER_STARTED === action.type) {
-        console.log('INITIATE_REGISTER_STARTED');
         return {
             ...state,
             loading: true,
@@ -169,7 +163,6 @@ const rootReducer = (state = initialState, action) => {
             alertShown: false
         };
     } else if (INITIATE_NOTE_CREATE_STARTED === action.type) {
-        console.log('INITIATE_NOTE_CREATE_STARTED');
         return {
             ...state,
             loading: true,
@@ -192,7 +185,6 @@ const rootReducer = (state = initialState, action) => {
             error: action.payload.error
         };
     } else if (FETCH_NOTE_LIST_STARTED === action.type) {
-        console.log('FETCH_NOTE_LIST_STARTED');
         return {
             ...state,
             loading: true,
@@ -218,7 +210,6 @@ const rootReducer = (state = initialState, action) => {
             error: action.payload.error
         };
     } else if (FETCH_NOTE_STARTED === action.type) {
-        console.log('FETCH_NOTE_STARTED');
         return {
             ...state,
             loading: true,
@@ -245,7 +236,6 @@ const rootReducer = (state = initialState, action) => {
             error: action.payload.error
         };
     } else if (INITIATE_NOTE_EDIT_STARTED === action.type) {
-        console.log('INITIATE_NOTE_EDIT_STARTED');
         return {
             ...state,
             loading: true,
@@ -268,7 +258,6 @@ const rootReducer = (state = initialState, action) => {
             error: action.payload.error
         };
     } else if (INITIATE_NOTE_SHARE_STARTED === action.type) {
-        console.log('INITIATE_NOTE_SHARE_STARTED');
         return {
             ...state,
             loading: true,
@@ -291,7 +280,6 @@ const rootReducer = (state = initialState, action) => {
             error: action.payload.error
         };
     } else if (FETCH_SHARED_FOR_USER_STARTED === action.type) {
-        console.log('FETCH_SHARED_FOR_USER_STARTED');
         return {
             ...state,
             loading: true,
@@ -318,15 +306,12 @@ const rootReducer = (state = initialState, action) => {
             error: action.payload.error
         };
     } else if (DELETE_SHARE_STARTED === action.type) {
-        console.log('DELETE_SHARE_STARTED');
         return {
             ...state,
             loading: true,
             loaded: false
         };
     } else if (DELETE_SHARE_SUCCESS === action.type) {
-        console.log('action.payload');
-        console.log(action.payload);
         return {
             ...state,
             loading: false,
@@ -370,7 +355,6 @@ const rootReducer = (state = initialState, action) => {
             error: action.payload.error
         };
     } else if (INITIATE_USER_UPDATE_STARTED === action.type) {
-        console.log('INITIATE_USER_UPDATE_STARTED');
         return {
             ...state,
             loading: true,
@@ -396,7 +380,6 @@ const rootReducer = (state = initialState, action) => {
             error: action.payload.error
         };
     } else if (FETCH_BY_EMAIL_STARTED === action.type) {
-        console.log('FETCH_BY_EMAIL_STARTED');
         return {
             ...state,
             loading: true,

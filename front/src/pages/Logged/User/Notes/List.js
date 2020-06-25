@@ -120,7 +120,6 @@ class List extends React.Component {
             const current = view['@id']
                 ? <Pagination.Item active><span> {curPage} </span></Pagination.Item>
                 : '';
-            console.log(view);
 
             return (
                 <div>

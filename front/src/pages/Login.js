@@ -50,7 +50,7 @@ class Login extends React.Component {
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.userData !== null) {
-            this.props.history.push('/user/');
+            this.props.history.push('/user/notes/list/1');
         }
     }
 
