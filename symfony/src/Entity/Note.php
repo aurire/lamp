@@ -38,7 +38,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     normalizationContext={"groups"={"notes:read"}},
  *     denormalizationContext={"groups"={"notes:write"}},
  *     attributes={
- *         "pagination_items_per_page"=2
+ *         "pagination_items_per_page"=5
  *     }
  * )
  *
@@ -89,7 +89,7 @@ class Note
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"notes:read"})
+     * @Groups({"notes:read", "user:read", "share:read"})
      */
     private $createdAt;
 

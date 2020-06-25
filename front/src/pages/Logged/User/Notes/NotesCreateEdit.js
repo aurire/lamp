@@ -3,6 +3,9 @@ import {withRouter} from "react-router";
 import {connect} from "react-redux";
 import {initiateNoteCreate, setAlert, fetchNote, initiateNoteEdit, deleteShare} from "../../../../actions";
 import {Link} from "react-router-dom";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import ListGroup from "react-bootstrap/ListGroup";
 
 const CREATE = 'Create';
 const EDIT = 'Edit';
@@ -133,48 +136,63 @@ class NotesCreateEdit extends React.Component {
             return <div>Refreshing Note data for editing</div>
         }
 
-        return <form>
-            <div>
-                <label htmlFor="title">Title</label>
-                <input onChange={this.handleChange} value={this.state.title} name="title" id="title" />
-            </div>
-            <div>
-                <label htmlFor="message">Message</label>
-                <input onChange={this.handleChange} value={this.state.message} name="message" id="message" />
-            </div>
-            <input onClick={this.handleSubmit} type="submit" value={this.getCreateOrEdit() + " Note"} />
+        return <Form>
+            <Form.Group>
+                <Form.Label>Title</Form.Label>
+                <Form.Control onChange={this.handleChange} value={this.state.title} type="text" placeholder="Enter title" name="title" id="title" />
+                <Form.Text className="text-muted">
+                    The title for your note
+                </Form.Text>
+            </Form.Group>
+            <Form.Group>
+                <Form.Label>Message</Form.Label>
+                <Form.Control onChange={this.handleChange} value={this.state.message} type="text" placeholder="Note contents" name="message" id="message" />
+                <Form.Text className="text-muted">
+                    Enter your note contents
+                </Form.Text>
+            </Form.Group>
+            <Button variant="primary" onClick={this.handleSubmit} type="submit">{this.getCreateOrEdit() + " Note"}</Button>
             {error}
-        </form>;
+        </Form>;
     }
     getNoteShares() {
         if (null === this.state.noteShares) {
             return '';
         }
         const items = this.state.noteShares.map((noteShare) =>
-            <div key={noteShare['@id']}>
-                {noteShare['user']['email']}
+            <ListGroup.Item key={noteShare['@id']}>
+                {noteShare['user']['email']}<span> </span>
                 {
                     this.props.deleted.hasOwnProperty(noteShare['@id'].split('/').pop())
                     ? ' - Sharing removed '
-                    : <button onClick={this.handleDelete} className="share-delete" data-id={noteShare['@id']}>
-                        Remove sharing</button>
+                    : <Button variant="outline-danger" onClick={this.handleDelete} className="share-delete" data-id={noteShare['@id']}>
+                        Remove sharing</Button>
                 }
-            </div>
+            </ListGroup.Item>
         );
 
         return <div>
+            <hr />
             <h2>Shared with:</h2>
-            {items}
+            <ListGroup>
+                {items}
+            </ListGroup>
+            <hr />
         </div>;
     }
     render() {
+
+        const shareThis = EDIT === this.getCreateOrEdit()
+            ? <Link to={"/user/notes/share/" + this.props.match.params.id}>Share this note</Link>
+            : ''
+        ;
 
         return (
             <div>
                 <h1>{this.getCreateOrEdit()} Note</h1>
                 {this.getForm()}
                 {this.getNoteShares()}
-                <Link to={"/user/notes/share/" + this.props.match.params.id}>Share this note</Link>
+                {shareThis}
             </div>
         );
     }

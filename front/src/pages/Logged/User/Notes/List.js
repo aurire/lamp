@@ -3,6 +3,8 @@ import {connect} from "react-redux";
 import {withRouter} from "react-router";
 import {Link} from "react-router-dom";
 import {fetchNotesList, setAlert, deleteNote} from "../../../../actions";
+import ListGroup from "react-bootstrap/ListGroup";
+import Pagination from "react-bootstrap/Pagination";
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -34,21 +36,34 @@ class List extends React.Component {
             let notes = this.props.notes[this.props.match.params.id]['hydra:member'];
 
             const listItems = notes.map((note) =>
-              <div key={note['@id']}>
-                  <hr />
-                  <p>{note['createdAt']}</p>
-                  <p>{note['title']}</p>
+              <ListGroup.Item key={note['@id']}>
+                  <h5>{note['title']} <span style={{fontWeight: "normal", fontSize: "small"}}>{
+                      new Intl.DateTimeFormat(
+                          "en-GB",
+                          {
+                              year: "numeric",
+                              month: "long",
+                              day: "2-digit",
+                              hour: 'numeric',
+                              minute: 'numeric',
+                              second: 'numeric'
+                          }
+                      ).format(new Date(note['createdAt']))
+                  }</span></h5>
                   <p>{note['shortMessage']}</p>
                   <Link to={"/user/notes/edit/" + note['@id'].split('/').pop()}>Edit Note</Link>
-                  <span> </span>
+                  <span> | </span>
                   <Link to={"/user/notes/share/" + note['@id'].split('/').pop()}>Share Note</Link>
-                  <span> </span>
+                  <span> | </span>
                   <a href="#" data-id={note['@id'].split('/').pop()} onClick={this.onDeleteClick} >Delete Note</a>
-                  <hr />
-              </div>
+              </ListGroup.Item>
             );
 
-            return listItems;
+            return (
+                <ListGroup>
+                    {listItems}
+                </ListGroup>
+            );
         }
 
         return '';
@@ -60,25 +75,64 @@ class List extends React.Component {
                 return '';
             }
             const first = view['hydra:first']
-                ? <Link to={"/user/notes/list/" + view['hydra:first'].split('page=').pop()}>First</Link>
-                : '';
+                ? <Pagination.First>
+                    <Link to={"/user/notes/list/" + view['hydra:first'].split('page=').pop()}>
+                        First
+                    </Link>
+                </Pagination.First>
+                : ''
+            ;
+
             const next = view['hydra:next']
-                ? <Link to={"/user/notes/list/" + view['hydra:next'].split('page=').pop()}>Next</Link>
-                : '';
+                ? <>
+                    <Pagination.Next>
+                        <Link to={"/user/notes/list/"
+                        + view['hydra:next'].split('page=').pop()}>
+                            Next
+                        </Link>
+                    </Pagination.Next>
+                    <Pagination.Ellipsis />
+                </>
+                : ''
+            ;
             const prev = view['hydra:previous']
-                ? <Link to={"/user/notes/list/" + view['hydra:previous'].split('page=').pop()}>Previous</Link>
-                : '';
+                ? <>
+                    <Pagination.Ellipsis />
+                    <Pagination.Prev>
+                        <Link to={"/user/notes/list/"
+                            + view['hydra:previous'].split('page=').pop()}>
+                            Previous
+                        </Link>
+                    </Pagination.Prev>
+                </>
+                : ''
+            ;
             const last = view['hydra:last']
-                ? <Link to={"/user/notes/list/" + view['hydra:last'].split('page=').pop()}>Last</Link>
-                : '';
+                ? <Pagination.Last>
+                    <Link to={"/user/notes/list/" + view['hydra:last'].split('page=').pop()}>
+                        Last
+                    </Link>
+                </Pagination.Last>
+                : ''
+            ;
             const curPage = view['@id'].split('page=').pop();
             const space = <span> </span>;
             const current = view['@id']
-                ? <span> {curPage} </span>
+                ? <Pagination.Item active><span> {curPage} </span></Pagination.Item>
                 : '';
             console.log(view);
 
-            return <p>{first} {space} {prev} {space} {current} {space} {next} {space} {last}</p>;
+            return (
+                <div>
+                    <Pagination>
+                        {first}
+                        {prev}
+                        {current}
+                        {next}
+                        {last}
+                    </Pagination>
+                </div>
+            );
         }
     }
     componentDidMount() {
@@ -112,7 +166,7 @@ class List extends React.Component {
     render() {
         return (
             <div>
-                <p>This is user notes list, page: {this.props.match.params.id}</p>
+                <h1>Your notes</h1>
                 <p>{this.state.msg}</p>
                 {this.getNotes()}
                 {this.getPager()}

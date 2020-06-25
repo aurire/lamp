@@ -2,6 +2,7 @@ import React from "react";
 import {connect} from "react-redux";
 import {Link, withRouter} from "react-router-dom";
 import {fetchSharedForUser, setAlert} from "../../../../actions";
+import ListGroup from "react-bootstrap/ListGroup";
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -28,21 +29,33 @@ class NotesSharedWithMe extends React.Component {
         if (this.props.shared[this.props.match.params.id]) {
             let notes = this.props.shared[this.props.match.params.id]['hydra:member'];
 
-            console.log('notes');
-            console.log(notes);
-
             const listItems = notes.map((note) =>
-                <div key={note['note']['@id']}>
-                    <hr />
-                    <p>{note['noteOwner']}</p>
-                    <p>{note['note']['createdAt']}</p>
-                    <p>{note['note']['title']}</p>
+                <ListGroup.Item key={note['note']['@id']}>
+                    <h5>{note['noteOwner']}<span> </span>
+                        <span style={{fontWeight: "normal", fontSize: "small"}}>{
+                            new Intl.DateTimeFormat(
+                                "en-GB",
+                                {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "2-digit",
+                                    hour: 'numeric',
+                                    minute: 'numeric',
+                                    second: 'numeric'
+                                }
+                            ).format(new Date(note['note']['createdAt']))
+                        }</span>
+                    </h5>
+                    <p><b>{note['note']['title']}</b></p>
                     <p>{note['note']['message']}</p>
-                    <hr />
-                </div>
+                </ListGroup.Item>
             );
 
-            return listItems;
+            return (
+                <ListGroup>
+                    {listItems}
+                </ListGroup>
+            );
         }
 
         return '';

@@ -1,6 +1,8 @@
 import React from "react";
 import {connect} from 'react-redux';
 import {initiateNoteShare, setAlert, fetchByEmail} from "../../../../actions";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -19,11 +21,12 @@ class NotesShare extends React.Component {
         super(props);
         this.state = {
             user: '',
-            userid: 0
+            userid: null
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
         this.handleShareSubmit = this.handleShareSubmit.bind(this);
+        this.getResults = this.getResults.bind(this);
     }
     handleChange(event) {
         this.setState({
@@ -76,11 +79,16 @@ class NotesShare extends React.Component {
 
         return (
             <div>
-                <form onSubmit={this.handleSearchSubmit}>
-                    <label htmlFor="user">Email</label>
-                    <input name="user" onChange={this.handleChange} id="user" value={this.state.user} />
-                    <input type="submit" value="Search" />
-                </form>
+                <Form onSubmit={this.handleSearchSubmit}>
+                    <Form.Group>
+                        <Form.Label>Search by user email</Form.Label>
+                        <Form.Control onChange={this.handleChange} value={this.state.title} type="text" placeholder="Enter user email" name="user" id="user" />
+                        <Form.Text className="text-muted">
+                            Enter at least the portion of email you want to share a note with
+                        </Form.Text>
+                    </Form.Group>
+                    <Button variant="primary" type="submit">Search</Button>
+                </Form>
                 <p>{error}</p>
             </div>
         );
@@ -94,17 +102,25 @@ class NotesShare extends React.Component {
                     return false;
                 }
                 return true;
-            }).map(function(result) {
+            });
+            results = results.map(function(result) {
+
                 return <option value={result['@id']} key={result['@id']}>{result.email}</option>;
             });
 
             return (
-                <form onSubmit={this.handleShareSubmit}>
-                    <select id="userid" name="userid" onChange={this.handleChange}>
-                        {results}
-                    </select>
-                    <input type="submit" value="Share" />
-                </form>
+                <Form onSubmit={this.handleShareSubmit}>
+                    <Form.Group>
+                        <Form.Label>Select a user</Form.Label>
+                        <Form.Control as="select" custom id="userid" name="userid"  onChange={this.handleChange}>
+                            {results}
+                        </Form.Control>
+                        <Form.Text className="text-muted">
+                            Select specific user by email you want to share a note with
+                        </Form.Text>
+                    </Form.Group>
+                    <Button variant="primary" type="submit">Share</Button>
+                </Form>
             );
         }
 
@@ -114,7 +130,6 @@ class NotesShare extends React.Component {
         return (
             <div>
                 <h1>Share a note</h1>
-                <p>Begin by searching for a user by his email. Then hit share to share with him.</p>
                 {this.getForm()}
                 {this.getResults()}
             </div>

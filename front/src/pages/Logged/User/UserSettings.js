@@ -1,6 +1,8 @@
 import React from "react";
 import {connect} from "react-redux";
 import {initiateUserUpdate} from "../../../actions";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 
 const mapStateToProps = (state) => {
     return {...state};
@@ -77,14 +79,18 @@ class UserSettings extends React.Component {
             <div>
                 <h1>Profile</h1>
                 <p>{this.state.msg}</p>
-                <form>
-                    <div>
-                        <label htmlFor="email">Phone</label>
-                        <input onChange={this.handleChange} value={phone} name="phone" id="phone" />
-                    </div>
-                    <input onClick={this.handleSubmit} type="submit" value="Update" />
+                <Form>
+                    <Form.Group>
+                        <Form.Label>Phone</Form.Label>
+                        <Form.Control onChange={this.handleChange} value={phone} type="text" placeholder="Enter your phone" name="phone" id="phone" />
+                        <Form.Text className="text-muted">
+                            This one is only for admin contact and is only visible to owner(you) and admin
+                        </Form.Text>
+                    </Form.Group>
+
+                    <Button variant="primary" onClick={this.handleSubmit} type="submit">Update</Button>
                     {error}
-                </form>
+                </Form>
             </div>
         );
     }

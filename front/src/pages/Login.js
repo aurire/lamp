@@ -3,6 +3,11 @@ import {withRouter} from "react-router";
 import {Link} from "react-router-dom";
 import {connect} from "react-redux";
 import {initiateLogin, getUserData} from "../actions";
+import Navbar from "react-bootstrap/Navbar";
+import Nav from "react-bootstrap/Nav";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import Alert from "react-bootstrap/Alert";
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -57,30 +62,57 @@ class Login extends React.Component {
                 && this.props.error.response.data
                 && this.props.error.response.data.error
             ) {
-                error = <p>{this.props.error.response.data.error}</p>
+                error =
+                    <div className="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>You got an error!</strong>
+                        <p>
+                            {this.props.error.response.data.error}
+                        </p>
+                        <button type="button" className="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>;
+
             } else {
                 error = <p>{this.props.error.message}</p>
             }
         }
-        const alert = this.props.alert;
+        const alert = this.props.alert ? <Alert variant="info">{this.props.alert}</Alert> : '';
 
         return (
             <div>
-                <p>{alert}</p>
+                {alert}
+                {error}
+                <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
+                    <Navbar.Brand>Notes sharing</Navbar.Brand>
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    <Navbar.Collapse id="basic-navbar-nav">
+                        <Nav className="mr-auto">
+                            <Nav.Link disabled href="/">Login</Nav.Link>
+                            <Nav.Link href="/register">Register</Nav.Link>
+                        </Nav>
+                    </Navbar.Collapse>
+                </Navbar>
                 <h1>Login</h1>
-                <form>
-                    <div>
-                        <label htmlFor="email">Email</label>
-                        <input onChange={this.handleChange} name="email" id="email" />
-                    </div>
-                    <div>
-                        <label htmlFor="password">Password</label>
-                        <input onChange={this.handleChange} type="password" name="password" id="password" />
-                    </div>
-                    <input onClick={this.handleSubmit} type="submit" value="Login" />
-                    {error}
-                </form>
-                <Link to="/register">Register</Link>
+                <Form>
+                    <Form.Group>
+                        <Form.Label>Email</Form.Label>
+                        <Form.Control onChange={this.handleChange} value={this.state.email} type="email"
+                                      placeholder="Enter your email" name="email" id="email" />
+                        <Form.Text className="text-muted">
+                            Your registered email address
+                        </Form.Text>
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control onChange={this.handleChange} value={this.state.password} type="password"
+                                      placeholder="Enter your password" name="password" id="password" />
+                        <Form.Text className="text-muted">
+                            Your registration password
+                        </Form.Text>
+                    </Form.Group>
+                    <Button variant="primary" onClick={this.handleSubmit} type="submit">Login</Button>
+                </Form>
             </div>
         );
     }

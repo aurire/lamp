@@ -150,7 +150,8 @@ const rootReducer = (state = initialState, action) => {
                 deleted: {},
                 search: {},
                 dataFetchFinished: false,
-                mainActionFinished: false
+                mainActionFinished: false,
+                error: ''
             } : {
                 ...state,
                 alertShown: true,
@@ -158,7 +159,8 @@ const rootReducer = (state = initialState, action) => {
                 deleted: {},
                 search: {},
                 dataFetchFinished: false,
-                mainActionFinished: false
+                mainActionFinished: false,
+                error: ''
             };
     } else if (SET_ALERT === action.type) {
         return {

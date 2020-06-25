@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import {connect} from "react-redux";
 import {locationChanged} from "./actions";
+import Spinner from "react-bootstrap/Spinner";
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -28,7 +29,11 @@ class AppRouter extends React.Component {
     }
 
     render() {
-        const loading = this.props.loading ? <div>Loading...</div> : '';
+        const loading = this.props.loading
+            ? <Spinner animation="border" role="status">
+                <span className="sr-only">Loading...</span>
+            </Spinner>
+            : '';
 
         return (
             <div>
